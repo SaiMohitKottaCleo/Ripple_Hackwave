@@ -20,25 +20,26 @@ export function FeatureFriday({ go }) {
     <div className="h-full overflow-y-auto bg-void">
       {/* Sticky top bar */}
       <div className="sticky top-0 z-30 backdrop-blur-md bg-void/85 border-b border-subtle">
-        <div className="max-w-[1120px] mx-auto px-8 h-14 flex items-center gap-4">
+        <div className="max-w-[1120px] mx-auto px-4 sm:px-8 h-14 flex items-center gap-2 sm:gap-4">
           <button
             onClick={() => go("landing")}
-            className="h-8 w-8 inline-flex items-center justify-center rounded-md border border-subtle text-secondary hover:text-primary hover:border-active transition-colors"
+            className="h-8 w-8 flex-none inline-flex items-center justify-center rounded-md border border-subtle text-secondary hover:text-primary hover:border-active transition-colors"
             aria-label="Back to home"
           >
             <ArrowLeft className="h-4 w-4" />
           </button>
           <span className="font-display font-semibold text-lg text-primary">RIPPLE</span>
-          <Badge tone="blue">Feature Friday · Week 1</Badge>
+          <Badge tone="blue" className="hidden sm:inline-flex">Feature Friday · Week 1</Badge>
           <span className="flex-1" />
           <GithubButton size="sm" />
           <Button variant="ghost" size="sm" onClick={() => go("builder")}>
-            Open the app →
+            <span className="hidden sm:inline">Open the app →</span>
+            <span className="sm:hidden">App →</span>
           </Button>
         </div>
       </div>
 
-      <main className="max-w-[1120px] mx-auto px-8 pb-24">
+      <main className="max-w-[1120px] mx-auto px-4 sm:px-8 pb-24">
         <Hero />
         <Problem />
         <HowItWorks />

@@ -25,9 +25,9 @@ export function StoryPanel({ character, impacts, event, cracked, onClose }) {
   return (
     <motion.aside
       initial={false}
-      animate={{ x: character ? 0 : 420 }}
+      animate={{ x: character ? "0%" : "100%" }}
       transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-      className="absolute top-0 right-0 bottom-0 w-[420px] z-40 bg-surface border-l border-subtle shadow-lg flex flex-col"
+      className="absolute top-0 right-0 bottom-0 w-full sm:w-[420px] z-40 bg-surface border-l border-subtle shadow-lg flex flex-col"
     >
       {character && (
         <>

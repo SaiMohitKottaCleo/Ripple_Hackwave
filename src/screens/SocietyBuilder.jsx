@@ -94,10 +94,10 @@ export function SocietyBuilder({ go, onReady }) {
   return (
     <div className="flex h-full flex-col bg-void">
       {/* Top bar */}
-      <header className="h-14 flex-none flex items-center px-5 gap-4 border-b border-subtle">
+      <header className="h-14 flex-none flex items-center px-3 sm:px-5 gap-2 sm:gap-4 border-b border-subtle">
         <button
           onClick={() => go("landing")}
-          className="h-8 w-8 inline-flex items-center justify-center rounded-md border border-subtle text-secondary hover:text-primary hover:border-active transition-colors"
+          className="h-8 w-8 flex-none inline-flex items-center justify-center rounded-md border border-subtle text-secondary hover:text-primary hover:border-active transition-colors"
           aria-label="Back"
         >
           <ArrowLeft className="h-4 w-4" />
@@ -105,14 +105,15 @@ export function SocietyBuilder({ go, onReady }) {
         <span className="font-display font-semibold text-xl text-primary tracking-[-0.01em]">
           RIPPLE
         </span>
-        <span className="flex-1 text-center font-body text-base text-secondary">
+        <span className="flex-1 text-center font-body text-base text-secondary hidden md:inline">
           Society Builder
         </span>
-        <Badge tone="neutral" mono>
+        <span className="flex-1 md:hidden" />
+        <Badge tone="neutral" mono className="hidden sm:inline-flex">
           {characters.length} characters
         </Badge>
         <Button variant="ghost" size="sm" onClick={resetSociety} iconLeft={<RotateCcw className="h-3.5 w-3.5" />}>
-          Reset
+          <span className="hidden sm:inline">Reset</span>
         </Button>
         <Button
           variant="primary"
@@ -124,13 +125,14 @@ export function SocietyBuilder({ go, onReady }) {
           }}
           iconRight={<ArrowRight className="h-4 w-4" />}
         >
-          Drop an Event
+          <span className="hidden sm:inline">Drop an Event</span>
+          <span className="sm:hidden">Event</span>
         </Button>
       </header>
 
-      <div className="flex flex-1 min-h-0">
+      <div className="flex flex-1 min-h-0 flex-col md:flex-row">
         {/* Canvas */}
-        <div className="relative flex-[0_0_60%] overflow-hidden border-r border-subtle">
+        <div className="relative md:flex-[0_0_60%] flex-none h-[55vh] md:h-auto overflow-hidden md:border-r border-b md:border-b-0 border-subtle">
           <svg className="absolute inset-0 h-full w-full pointer-events-none">
             {connections.map((e, i) => {
               const a = characters.find((c) => c.id === e.a);
@@ -165,16 +167,15 @@ export function SocietyBuilder({ go, onReady }) {
                 onMouseLeave={() => setHov(null)}
                 animate={{ y: hov === c.id ? -4 : 0 }}
                 transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-                className="absolute cursor-pointer"
+                className="absolute cursor-pointer w-[110px] sm:w-[150px]"
                 style={{
                   left: `${c.x * 100}%`,
                   top: `${c.y * 100}%`,
                   transform: "translate(-50%, -50%)",
-                  width: 150,
                 }}
               >
                 <Card
-                  padding="p-3"
+                  padding="p-2 sm:p-3"
                   className={`text-center ${
                     selId === c.id
                       ? "border-accent-blue"
@@ -184,15 +185,16 @@ export function SocietyBuilder({ go, onReady }) {
                   }`}
                 >
                   <div className="flex justify-center">
-                    <AvatarToken emoji={c.emoji} vulnerability={v} size={56} />
+                    <AvatarToken emoji={c.emoji} vulnerability={v} size={44} className="sm:!hidden" />
+                    <AvatarToken emoji={c.emoji} vulnerability={v} size={56} className="hidden sm:inline-flex" />
                   </div>
-                  <div className="font-display font-semibold text-[15px] text-primary mt-2">
+                  <div className="font-display font-semibold text-[12px] sm:text-[15px] text-primary mt-1.5 sm:mt-2 truncate">
                     {c.name}
                   </div>
-                  <div className="font-body text-[11px] text-secondary mt-0.5">
+                  <div className="font-body text-[10px] sm:text-[11px] text-secondary mt-0.5 truncate">
                     {c.archetype}
                   </div>
-                  <div className="mt-2.5">
+                  <div className="mt-2 sm:mt-2.5">
                     <VulnerabilityBar score={v} />
                   </div>
                 </Card>
@@ -206,7 +208,7 @@ export function SocietyBuilder({ go, onReady }) {
         </div>
 
         {/* Editor */}
-        <div className="flex-1 overflow-y-auto p-7">
+        <div className="flex-1 overflow-y-auto p-5 sm:p-7">
           <AnimatePresence mode="wait">
             {!selected ? (
               <motion.div

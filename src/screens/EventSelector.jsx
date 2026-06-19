@@ -52,9 +52,9 @@ export function EventSelector({ go, society, onTrigger }) {
           transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
           className="w-full max-w-[640px] max-h-[90%] overflow-y-auto"
         >
-          <Card elevated padding="p-8" className="!rounded-xl">
+          <Card elevated padding="p-5 sm:p-8" className="!rounded-xl">
             <div className="text-center mb-5">
-              <h2 className="font-display font-semibold text-[28px] text-primary m-0">
+              <h2 className="font-display font-semibold text-2xl sm:text-[28px] text-primary m-0">
                 Choose your event
               </h2>
               <p className="font-body text-sm text-secondary mt-2">
@@ -62,7 +62,7 @@ export function EventSelector({ go, society, onTrigger }) {
               </p>
             </div>
 
-            <div className="grid grid-cols-2 gap-2.5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
               {EVENTS.map((e) => (
                 <div key={e.id} onClick={() => { setPicked(e.id); setCustom(""); }}>
                   <Card

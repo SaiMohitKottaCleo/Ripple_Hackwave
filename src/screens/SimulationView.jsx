@@ -383,7 +383,7 @@ export function SimulationView({ go, event, society }) {
 
       {/* Top chrome */}
       <div
-        className="absolute top-0 left-0 right-0 h-14 z-30 flex items-center gap-3.5 px-4"
+        className="absolute top-0 left-0 right-0 h-14 z-30 flex items-center px-3 sm:px-4 gap-2 sm:gap-3.5"
         style={{
           background: "linear-gradient(to bottom, rgba(9,9,11,0.92), transparent)",
           transform: chrome ? "none" : "translateY(-100%)",
@@ -392,20 +392,21 @@ export function SimulationView({ go, event, society }) {
       >
         <button
           onClick={() => go("event")}
-          className="h-8 w-8 inline-flex items-center justify-center rounded-md border border-subtle text-secondary hover:text-primary hover:border-active"
+          className="h-8 w-8 flex-none inline-flex items-center justify-center rounded-md border border-subtle text-secondary hover:text-primary hover:border-active"
           aria-label="Back to events"
         >
           <ArrowLeft className="h-4 w-4" />
         </button>
-        <span className="font-display font-semibold text-lg text-primary">
+        <span className="font-display font-semibold text-lg text-primary hidden sm:inline">
           RIPPLE
         </span>
         <Badge
           tone={(event?.tone || cascade?.event?.tone) === "green" ? "green" : "amber"}
         >
-          {event?.emoji || cascade?.event?.emoji} {event?.name || cascade?.event?.name}
+          {event?.emoji || cascade?.event?.emoji}{" "}
+          <span className="hidden sm:inline">{event?.name || cascade?.event?.name}</span>
         </Badge>
-        <span className="flex-1 text-center font-mono text-xs text-secondary inline-flex items-center justify-center gap-2">
+        <span className="flex-1 text-center font-mono text-xs text-secondary hidden md:inline-flex items-center justify-center gap-2">
           {loading && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
           {headline}
           {source && (
@@ -417,13 +418,14 @@ export function SimulationView({ go, event, society }) {
             </span>
           )}
         </span>
+        <span className="flex-1 md:hidden" />
         <Button
           variant="ghost"
           size="sm"
           onClick={() => setShowPulse((s) => !s)}
           iconLeft={<Settings2 className="h-3.5 w-3.5" />}
         >
-          Society Pulse
+          <span className="hidden md:inline">Society Pulse</span>
         </Button>
         <Button
           variant="ghost"
@@ -431,10 +433,11 @@ export function SimulationView({ go, event, society }) {
           onClick={play}
           iconLeft={<RefreshCw className="h-3.5 w-3.5" />}
         >
-          Replay
+          <span className="hidden md:inline">Replay</span>
         </Button>
         <Button variant="ghost" size="sm" onClick={() => go("event")}>
-          New event
+          <span className="hidden sm:inline">New event</span>
+          <span className="sm:hidden">New</span>
         </Button>
       </div>
 
@@ -491,9 +494,10 @@ export function SimulationView({ go, event, society }) {
       {/* Cascade timeline (bottom) */}
       {cascade && (
         <div
-          className="absolute bottom-0 left-0 h-[184px] z-20 border-t border-subtle px-5 py-4 overflow-x-auto flex gap-9"
+          className={`absolute bottom-0 left-0 right-0 ${
+            selected ? "sm:right-[420px]" : ""
+          } h-[184px] z-20 border-t border-subtle px-3 sm:px-5 py-4 overflow-x-auto flex gap-6 sm:gap-9`}
           style={{
-            right: selected ? 420 : 0,
             background: "linear-gradient(to top, var(--bg-surface), rgba(17,17,20,0.96))",
             transition: "right 300ms cubic-bezier(0.16,1,0.3,1)",
           }}

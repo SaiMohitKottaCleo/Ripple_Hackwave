@@ -1,46 +1,32 @@
 # 🛢️ RIPPLE
 
+<p align="center">
+
+  <a href="#-feature-friday--week-1"><img src="https://img.shields.io/badge/Feature_Friday-Week_1-4a7cff?style=for-the-badge" alt="Feature Friday"/></a>
+  <a href="#-license"><img src="https://img.shields.io/badge/License-MIT-22c55e?style=for-the-badge" alt="License"/></a>
+  <a href="https://github.com/Mohitlikestocode/Ripple_Hackwave"><img src="https://img.shields.io/badge/source-Mohitlikestocode%2FRipple__Hackwave-181717?style=for-the-badge&logo=github" alt="GitHub"/></a>
+
+  <br/>
+
+  <img src="https://img.shields.io/badge/React-18-61dafb?style=for-the-badge&logo=react&logoColor=000" alt="React"/>
+  <img src="https://img.shields.io/badge/Vite-5-646cff?style=for-the-badge&logo=vite&logoColor=white" alt="Vite"/>
+  <img src="https://img.shields.io/badge/Tailwind-3-22d3ee?style=for-the-badge&logo=tailwindcss&logoColor=white" alt="Tailwind"/>
+  <img src="https://img.shields.io/badge/Framer_Motion-11-bb86ff?style=for-the-badge&logo=framer" alt="Framer Motion"/>
+  <img src="https://img.shields.io/badge/d3--force-3-f59e0b?style=for-the-badge&logo=d3dotjs&logoColor=white" alt="d3-force"/>
+  <img src="https://img.shields.io/badge/Claude_Sonnet-4.5-cc785c?style=for-the-badge&logo=anthropic&logoColor=white" alt="Claude"/>
+
+</p>
+
 ![RIPPLE](./image.png)
 
 > *"Petrol phir mehnga ho gaya. ₹4500 ka budget tha, ab ₹5400 lagega."*
 > — Ramesh, auto-rickshaw driver, Pune
-
-[![Feature Friday](https://img.shields.io/badge/Feature_Friday-Week_1-4a7cff?style=for-the-badge)](#-feature-friday--week-1)
-[![License: MIT](https://img.shields.io/badge/License-MIT-22c55e?style=for-the-badge)](#-license)
-[![GitHub](https://img.shields.io/badge/source-Mohitlikestocode%2FRipple__Hackwave-181717?style=for-the-badge&logo=github)](https://github.com/Mohitlikestocode/Ripple_Hackwave)
-
-### Built with
-
-![React](https://img.shields.io/badge/React-18-61dafb?style=for-the-badge&logo=react&logoColor=000)
-![Vite](https://img.shields.io/badge/Vite-5-646cff?style=for-the-badge&logo=vite&logoColor=white)
-![Tailwind](https://img.shields.io/badge/Tailwind-3-22d3ee?style=for-the-badge&logo=tailwindcss&logoColor=white)
-![Framer Motion](https://img.shields.io/badge/Framer_Motion-11-bb86ff?style=for-the-badge&logo=framer)
-![d3-force](https://img.shields.io/badge/d3--force-3-f59e0b?style=for-the-badge&logo=d3dotjs&logoColor=white)
-![Claude](https://img.shields.io/badge/Claude_Sonnet-4.5-cc785c?style=for-the-badge&logo=anthropic&logoColor=white)
-
----
 
 **RIPPLE** is a multi-agent societal-impact simulator. Build a tiny cast of
 everyday characters → drop a shock event → watch the consequences cascade
 through their lives, wave by wave, in their own Hinglish voices.
 
 Not a dashboard. A narrative simulation engine. Palantir meets a Nolan film.
-
-## 📡 60-second start
-
-```bash
-git clone https://github.com/Mohitlikestocode/Ripple_Hackwave
-cd Ripple_Hackwave
-npm install
-npm run dev          # → http://localhost:5173
-```
-
-Works **without** an API key — falls back to a baked cascade so the demo
-always plays. For the live Claude version:
-
-```bash
-cp .env.example .env.local      # paste ANTHROPIC_API_KEY=sk-ant-...
-```
 
 ---
 
@@ -55,15 +41,29 @@ demo-day judges see in 30 seconds.
 | Section | What it does |
 |---|---|
 | **Hero** | RIPPLE wordmark over concentric pulsing rings, "Built by Team Ripple" |
-| **The Invisible Chain** | The problem statement + a looping mini-network with a sonar pulse moving through it |
+| **The Invisible Chain** | The problem + a looping mini-network with a sonar pulse moving through it |
 | **How it works** | Three cards — **Build** · **Drop** · **Watch** — with custom SVG glyphs |
-| **Data Architecture** | A custom-SVG ER diagram of all 8 entities — `CHARACTER`, `RESOURCE`, `DEPENDENCY`, `CONNECTION`, `GOAL`, `EVENT`, `SIMULATIONRUN`, `IMPACTLOG` — with blue PK / amber FK dots, mono field types, cyan `1:N` relationship lines |
+| **Data Architecture** | A custom-SVG ER diagram of all 8 entities with blue PK / amber FK dots, mono field types, cyan `1:N` relationship lines |
 | **The Experience** | Four browser-frame mocks (Builder · Event Drop · Cascade · Story Card) rendered as live SVG, not screenshots |
 | **Built with** | The same pill badges you see above, but inline |
 
-The whole page lives in a `max-w-[1120px]` centered column. Sections are
-separated by hairline borders, never heavy dividers. Scroll-revealed motion
-with a 100ms stagger. Respects `prefers-reduced-motion`.
+---
+
+## 📡 60-second start
+
+```bash
+git clone https://github.com/Mohitlikestocode/Ripple_Hackwave
+cd Ripple_Hackwave
+npm install
+npm run dev          # → http://localhost:5173
+```
+
+Works **without** an API key — falls back to a baked cascade so the demo always
+plays. For the live Claude version:
+
+```bash
+cp .env.example .env.local      # paste ANTHROPIC_API_KEY=sk-ant-...
+```
 
 ---
 
@@ -100,9 +100,9 @@ you're watching.
 | `SIMULATIONRUN` | One pass of one event over one society |
 | `IMPACTLOG` | One person's experience in one wave — diary line, decision, downstream impact |
 
-**CHARACTER** is the hub (5 outgoing relationships). **IMPACTLOG** is the
-receipt — every wave-by-wave moment that ever happened to anyone is a row
-here. That's what lets butterfly-path tracing work as a single recursive query.
+**CHARACTER** is the hub. **IMPACTLOG** is the receipt — every wave-by-wave
+moment that ever happened to anyone is a row here. That's what lets
+butterfly-path tracing work as a single recursive query.
 
 ---
 
@@ -117,12 +117,12 @@ Ripple_Hackwave/
 │   ├── hooks/                  useLocalStorage · useReducedMotion
 │   ├── components/ui/          Button · Card · Badge · Input · Slider · GithubButton
 │   ├── components/ripple/      AvatarToken · VulnerabilityBar · WaveMarker · StatReadout
-│   └── screens/                LandingScreen · SocietyBuilder · EventSelector
+│   └── screens/                Landing · SocietyBuilder · EventSelector
 │                               · SimulationView · StoryPanel · FeatureFriday
 ├── public/
 │   ├── architecture.png        the diagram above
 │   └── ripple.svg              favicon
-├── image.png                   the hero shot up top
+├── image.png                   the hero shot
 └── vite.config.js              dev-only /api/anthropic proxy
 ```
 
@@ -139,7 +139,9 @@ Numbers are **JetBrains Mono**. Always. If it's data, it's mono.
 
 ---
 
-## 🤝 Built by **Team Ripple** · Made for **Feature Friday · Week 1**
+<p align="center">
+  Built by <b>Team Ripple</b> · Made for <b>Feature Friday · Week 1</b>
+</p>
 
 ## 📜 License
 

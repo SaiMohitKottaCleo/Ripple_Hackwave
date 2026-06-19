@@ -1,13 +1,14 @@
-# 🛢️ RIPPLE
+<h1 align="center">🛢️ RIPPLE</h1>
+
+<p align="center"><em>Every event has a face.</em></p>
 
 <p align="center"><a href="#-feature-friday--week-1"><img src="https://img.shields.io/badge/Feature_Friday-Week_1-4a7cff?style=flat-square" alt="Feature Friday"/></a> <a href="#-license"><img src="https://img.shields.io/badge/License-MIT-22c55e?style=flat-square" alt="License"/></a> <a href="https://github.com/Mohitlikestocode/Ripple_Hackwave"><img src="https://img.shields.io/badge/source-Ripple__Hackwave-181717?style=flat-square&logo=github" alt="GitHub"/></a></p>
 
 <p align="center"><img src="https://img.shields.io/badge/React-18-61dafb?style=flat-square&logo=react&logoColor=000" alt="React"/> <img src="https://img.shields.io/badge/Vite-5-646cff?style=flat-square&logo=vite&logoColor=white" alt="Vite"/> <img src="https://img.shields.io/badge/Tailwind-3-22d3ee?style=flat-square&logo=tailwindcss&logoColor=white" alt="Tailwind"/> <img src="https://img.shields.io/badge/Framer_Motion-11-bb86ff?style=flat-square&logo=framer" alt="Framer Motion"/> <img src="https://img.shields.io/badge/d3--force-3-f59e0b?style=flat-square&logo=d3dotjs&logoColor=white" alt="d3-force"/></p>
 
-![RIPPLE](./image.png)
+<p align="center"><img src="./image.png" alt="RIPPLE" width="100%"/></p>
 
-> *"Petrol phir mehnga ho gaya. ₹4500 ka budget tha, ab ₹5400 lagega."*
-> — Ramesh, auto-rickshaw driver, Pune
+<p align="center"><i>"Petrol phir mehnga ho gaya. ₹4500 ka budget tha, ab ₹5400 lagega."</i><br/>— Ramesh, auto-rickshaw driver, Pune</p>
 
 **RIPPLE** is a multi-agent societal-impact simulator. Build a tiny cast of
 everyday characters → drop a shock event → watch the consequences cascade

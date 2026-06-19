@@ -1,21 +1,8 @@
 # 🛢️ RIPPLE
 
-<p align="center">
+<p align="center"><a href="#-feature-friday--week-1"><img src="https://img.shields.io/badge/Feature_Friday-Week_1-4a7cff?style=flat-square" alt="Feature Friday"/></a> <a href="#-license"><img src="https://img.shields.io/badge/License-MIT-22c55e?style=flat-square" alt="License"/></a> <a href="https://github.com/Mohitlikestocode/Ripple_Hackwave"><img src="https://img.shields.io/badge/source-Ripple__Hackwave-181717?style=flat-square&logo=github" alt="GitHub"/></a></p>
 
-  <a href="#-feature-friday--week-1"><img src="https://img.shields.io/badge/Feature_Friday-Week_1-4a7cff?style=for-the-badge" alt="Feature Friday"/></a>
-  <a href="#-license"><img src="https://img.shields.io/badge/License-MIT-22c55e?style=for-the-badge" alt="License"/></a>
-  <a href="https://github.com/Mohitlikestocode/Ripple_Hackwave"><img src="https://img.shields.io/badge/source-Mohitlikestocode%2FRipple__Hackwave-181717?style=for-the-badge&logo=github" alt="GitHub"/></a>
-
-  <br/>
-
-  <img src="https://img.shields.io/badge/React-18-61dafb?style=for-the-badge&logo=react&logoColor=000" alt="React"/>
-  <img src="https://img.shields.io/badge/Vite-5-646cff?style=for-the-badge&logo=vite&logoColor=white" alt="Vite"/>
-  <img src="https://img.shields.io/badge/Tailwind-3-22d3ee?style=for-the-badge&logo=tailwindcss&logoColor=white" alt="Tailwind"/>
-  <img src="https://img.shields.io/badge/Framer_Motion-11-bb86ff?style=for-the-badge&logo=framer" alt="Framer Motion"/>
-  <img src="https://img.shields.io/badge/d3--force-3-f59e0b?style=for-the-badge&logo=d3dotjs&logoColor=white" alt="d3-force"/>
-  <img src="https://img.shields.io/badge/Claude_Sonnet-4.5-cc785c?style=for-the-badge&logo=anthropic&logoColor=white" alt="Claude"/>
-
-</p>
+<p align="center"><img src="https://img.shields.io/badge/React-18-61dafb?style=flat-square&logo=react&logoColor=000" alt="React"/> <img src="https://img.shields.io/badge/Vite-5-646cff?style=flat-square&logo=vite&logoColor=white" alt="Vite"/> <img src="https://img.shields.io/badge/Tailwind-3-22d3ee?style=flat-square&logo=tailwindcss&logoColor=white" alt="Tailwind"/> <img src="https://img.shields.io/badge/Framer_Motion-11-bb86ff?style=flat-square&logo=framer" alt="Framer Motion"/> <img src="https://img.shields.io/badge/d3--force-3-f59e0b?style=flat-square&logo=d3dotjs&logoColor=white" alt="d3-force"/></p>
 
 ![RIPPLE](./image.png)
 

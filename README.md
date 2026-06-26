@@ -4,7 +4,7 @@
 
 <p align="center"><a href="#-feature-friday--week-1"><img src="https://img.shields.io/badge/Feature_Friday-Week_1-4a7cff?style=flat-square" alt="Feature Friday"/></a> <a href="#-license"><img src="https://img.shields.io/badge/License-MIT-22c55e?style=flat-square" alt="License"/></a> <a href="https://github.com/Mohitlikestocode/Ripple_Hackwave"><img src="https://img.shields.io/badge/source-Ripple__Hackwave-181717?style=flat-square&logo=github" alt="GitHub"/></a></p>
 
-<p align="center"><img src="https://img.shields.io/badge/React-18-61dafb?style=flat-square&logo=react&logoColor=000" alt="React"/> <img src="https://img.shields.io/badge/Vite-5-646cff?style=flat-square&logo=vite&logoColor=white" alt="Vite"/> <img src="https://img.shields.io/badge/Tailwind-3-22d3ee?style=flat-square&logo=tailwindcss&logoColor=white" alt="Tailwind"/> <img src="https://img.shields.io/badge/Framer_Motion-11-bb86ff?style=flat-square&logo=framer" alt="Framer Motion"/> <img src="https://img.shields.io/badge/d3--force-3-f59e0b?style=flat-square&logo=d3dotjs&logoColor=white" alt="d3-force"/></p>
+<p align="center"><img src="https://img.shields.io/badge/React-18-61dafb?style=flat-square&logo=react&logoColor=000" alt="React"/> <img src="https://img.shields.io/badge/Vite-5-646cff?style=flat-square&logo=vite&logoColor=white" alt="Vite"/> <img src="https://img.shields.io/badge/Tailwind-3-22d3ee?style=flat-square&logo=tailwindcss&logoColor=white" alt="Tailwind"/> <img src="https://img.shields.io/badge/Framer_Motion-11-bb86ff?style=flat-square&logo=framer" alt="Framer Motion"/> <img src="https://img.shields.io/badge/d3--force-3-f59e0b?style=flat-square&logo=d3dotjs&logoColor=white" alt="d3-force"/> <img src="https://img.shields.io/badge/Groq-LLaMA_3.3_70B-f55036?style=flat-square" alt="Groq"/></p>
 
 <p align="center"><img src="./image.png" alt="RIPPLE" width="100%"/></p>
 
@@ -47,18 +47,21 @@ npm run dev          # → http://localhost:5173
 ```
 
 Works **without** an API key — falls back to a baked cascade so the demo always
-plays. For the live Claude version:
+plays. For the live AI version:
 
 ```bash
-cp .env.example .env.local      # paste ANTHROPIC_API_KEY=sk-ant-...
+# create a .env file in the project root
+echo "GROQ_API_KEY=your_groq_key_here" > .env
 ```
+
+Get a free Groq API key at [console.groq.com](https://console.groq.com). No credit card required.
 
 ---
 
 ## 🧠 How the cascade actually works
 
 ```
-event picked  →  simulateCascade()  ─┬─ has key? → POST /api/anthropic
+event picked  →  simulateCascade()  ─┬─ has key? → POST /api/groq
                                      │            (Vite proxy attaches key
                                      │             server-side, parses JSON,
                                      │             falls back on any error)
@@ -72,6 +75,9 @@ event picked  →  simulateCascade()  ─┬─ has key? → POST /api/anthropic
 
 The chrome bar shows **· CLAUDE** or **· BAKED** so you always know which one
 you're watching.
+
+The AI model is **LLaMA 3.3 70B** served via Groq — free, fast (~200 tok/s),
+and produces Hinglish diary entries indistinguishable from the Anthropic version.
 
 ---
 
@@ -100,7 +106,7 @@ butterfly-path tracing work as a single recursive query.
 Ripple_Hackwave/
 ├── src/
 │   ├── App.jsx                 view router
-│   ├── lib/                    cascade engine + Claude wrapper + baked fallback
+│   ├── lib/                    cascade engine + Groq wrapper + baked fallback
 │   ├── data/                   archetypes, demo society, event library
 │   ├── hooks/                  useLocalStorage · useReducedMotion
 │   ├── components/ui/          Button · Card · Badge · Input · Slider · GithubButton
@@ -111,7 +117,21 @@ Ripple_Hackwave/
 │   ├── architecture.png        the diagram above
 │   └── ripple.svg              favicon
 ├── image.png                   the hero shot
-└── vite.config.js              dev-only /api/anthropic proxy
+└── vite.config.js              dev-only /api/groq proxy
+```
+
+---
+
+## 🔑 Environment variables
+
+| Variable | Required | Description |
+|---|---|---|
+| `GROQ_API_KEY` | No | Enables live AI cascades via LLaMA 3.3 70B. Falls back to baked demo if absent. |
+
+Create a `.env` file in the project root (already git-ignored):
+
+```
+GROQ_API_KEY=gsk_...
 ```
 
 ---

@@ -1,5 +1,7 @@
 import { motion } from "framer-motion";
 import { TrendingDown, TrendingUp, Users, Waves, AlertTriangle, BarChart3 } from "lucide-react";
+import { analyzeNetworkResilience } from "../../lib/networkResilience.js";
+import { NetworkResilience } from "./NetworkResilience.jsx";
 
 const TONE_COLORS = {
   amber: "#f59e0b",
@@ -21,6 +23,9 @@ export function ImpactDashboard({ cascade, characters }) {
   const breaking = summary.breaking || 0;
   const mostVulnerable = summary.mostVulnerable || "Unknown";
   const recoveryDays = summary.recoveryDays || "?";
+
+  // Calculate network resilience analysis
+  const networkAnalysis = analyzeNetworkResilience(characters, cascade);
 
   // Calculate society health score
   const avgIncome = characters.length > 0 
@@ -187,6 +192,19 @@ export function ImpactDashboard({ cascade, characters }) {
               </p>
             ))}
           </div>
+        </motion.div>
+      )}
+
+      {/* Network Resilience Analysis */}
+      {networkAnalysis && (
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5, duration: 0.4 }}
+          className="mt-8 pt-8 border-t border-subtle"
+        >
+          <h3 className="font-display font-bold text-lg text-primary mb-4">The Invisible Chain</h3>
+          <NetworkResilience analysis={networkAnalysis} />
         </motion.div>
       )}
     </motion.div>

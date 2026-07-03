@@ -51,23 +51,49 @@
 - Response sanitization for both user input and AI output
 - Graceful error messages
 
+#### 4. **Network Resilience & Critical Nodes Analysis** ✅ COMPLETE
+- **Network Resilience Score** (0-100): Quantifies economy fragility
+- **Critical Nodes Detection**: Identifies 3 bottleneck characters
+- **Centrality Calculation**: Measures importance of each character in network (0-100)
+- **Intervention ROI Analysis**: Shows prevention cost vs. cascade savings for each character
+- **Dependency Graph**: Extracts economic connections from cascade data
+- **"Invisible Chain" Section**: Integrated into Impact Dashboard
+- **Key Insights**: Explains network vulnerabilities and intervention priorities
+
+**Why this matters:**
+- Directly addresses hackathon judges' question: "What makes your solution different?"
+- Quantifies the core thesis: "Every event has a face" + invisible chain of dependencies
+- Shows systemic thinking with DATA, not just narrative
+- Identifies which characters to intervene with for maximum cascade prevention
+- Reveals hidden bottlenecks in the economic network
+
 ---
 
 ## 📈 Build Metrics
 
 | Metric | Status |
 |--------|--------|
-| **Bundle Size** | 372 KB (118 KB gzipped) ✅ |
-| **Build Time** | 3.02s ✅ |
+| **Bundle Size** | 382 KB (121 KB gzipped) ✅ |
+| **Build Time** | 2.87s ✅ |
 | **Compilation Errors** | 0 ✅ |
 | **Dev Server** | http://localhost:5173 ✅ |
+| **Features Complete** | 7/10 Priority features ✅ |
 
 ---
 
 ## 🎯 Week 3 Roadmap: Next 48 Hours
 
-### Priority 1: Scenario Library (3-4 hours) — NEXT UP
-Pre-built shock events for instant demo without data entry friction:
+### ✅ JUST COMPLETED: Network Resilience
+**What it does:**
+- Quantifies "invisible chain" with Network Fragility Score (0-100)
+- Identifies 3 critical bottleneck characters
+- Shows intervention ROI for each character
+- Explains which interventions prevent cascades most effectively
+
+**Judge impact:** "This is what differentiates you—you don't just show cascade, you show how to stop it."
+
+### 🎯 Next Priority 1: Scenario Library (3-4 hours) — RECOMMENDED NEXT
+Pre-built shock events so judges see breadth without data entry friction:
 - "Monsoon Fails" (agricultural collapse)
 - "Tech Layoffs in Bangalore"
 - "RBI Rate Hike +50bps"
@@ -77,26 +103,21 @@ Pre-built shock events for instant demo without data entry friction:
 - "Rupee Crashes 15%"
 - "Water Shortage (Urban)"
 
-**Impact:** Judges can see 5+ scenarios in 2 minutes; demonstrates breadth of thinking
+**Why:** Judges can demo 5+ scenarios in 2 minutes; shows systemic thinking breadth
 
-### Priority 1b: Interconnection Map (4-5 hours)
-D3-force visualization showing:
-- All 8 characters as nodes before cascade starts
-- Connection lines showing economic dependencies
-- Red glow animation spreading through network during cascade
-- Visual proof of the "invisible chain" thesis
+### 🎯 Next Priority 1b: Policy Intervention System (5-7 hours) — BIGGEST IMPACT
+**What it does:**
+- Propose interventions (subsidy, emergency loan, job retraining)
+- See how interventions change cascade outcomes
+- Analyze second-order effects (subsidy helps X, costs Y, breaks Z)
+- Compare scenarios: "What if we subsidy this vs. that?"
 
-**Impact:** Core differentiator — judges see systemic thinking visualized
+**Why:** Shows solutions, not just problems. Judges love actionable impact.
 
-### Priority 2: Storytelling Features (4+ hours)
-- Character backstories (50-100 word Hinglish bios)
-- Diary mode (card stack showing pre/post/recovery entries)
-- Family tree visualization (who supports whom)
-
-### Priority 3: Polish & Export (2-3 hours)
+### 🎯 Priority 2: Mobile Responsiveness + Export (3-4 hours)
+- Responsive force graph (collapse to list on mobile)
 - PDF export with full cascade report
-- Mobile responsiveness
-- Download cascade data as JSON
+- Share cascade data as JSON
 
 ---
 
@@ -104,32 +125,34 @@ D3-force visualization showing:
 
 ### Latest Commit:
 ```
-commit 12f7d9b
-Week 3: Add Impact Dashboard + Strategic Roadmap
+commit 4350492
+Add Network Resilience & Critical Nodes Analysis
 
 ✨ Features:
-- Impact Dashboard component with society health metrics
-- Integrated into SimulationView with modal UI
-- Shows affected characters, cascade depth, income loss, vulnerability
-- Added Health Score metric (savings buffer / income ratio)
-- Added most vulnerable character highlight
-- Added recovery time estimates
-- Added causal loops analysis
+- Network Resilience Score (0-100) quantifies system fragility
+- Critical Nodes analysis identifies bottleneck characters
+- Intervention ROI calculator shows prevention cost vs. cascade savings
+- Dependency graph analysis to find invisible chain vulnerabilities
+- Integrated into Impact Dashboard as "The Invisible Chain" section
 
-📋 Strategic additions:
-- WEEK2_ROADMAP.md with 4 priority tiers
-- Roadmap covers: Dashboard, Scenarios, Interconnection Map, Storytelling features
-- Scoring matrix and demo script for judges
+📁 New Files:
+- src/lib/networkResilience.js: Core analysis engine
+- src/components/ripple/NetworkResilience.jsx: Display component
+
+📊 Modified Files:
+- src/components/ripple/ImpactDashboard.jsx: Integration
 ```
 
 ### Key Files Modified
 | File | Change | Status |
 |------|--------|--------|
 | `src/screens/SimulationView.jsx` | Added Impact Report button + modal | ✅ |
-| `src/components/ripple/ImpactDashboard.jsx` | New metrics dashboard component | ✅ |
-| `src/screens/CharacterChatScreen.jsx` | New character chat interface | ✅ |
+| `src/components/ripple/ImpactDashboard.jsx` | Integrated network resilience analysis | ✅ |
+| `src/components/ripple/NetworkResilience.jsx` | NEW: Network analysis UI component | ✅ |
+| `src/lib/networkResilience.js` | NEW: Core resilience analysis engine | ✅ |
+| `src/screens/CharacterChatScreen.jsx` | Character chat interface | ✅ |
 | `src/lib/contentModeration.js` | Content filtering system | ✅ |
-| `WEEK2_ROADMAP.md` | Strategic planning + scoring matrix | ✅ |
+| `WEEK3_ROADMAP.md` | Strategic planning + scoring matrix | ✅ |
 
 ---
 
@@ -143,8 +166,10 @@ Week 3: Add Impact Dashboard + Strategic Roadmap
 - [x] Moderation blocks inappropriate content
 - [ ] Dashboard modal opens smoothly
 - [ ] All metrics calculate correctly
-- [ ] Scenario library renders without errors
-- [ ] Interconnection map visualizes properly
+- [ ] Network Resilience Score displays correctly
+- [ ] Critical Nodes identified accurately
+- [ ] Intervention ROI calculations work
+- [ ] "Invisible Chain" section renders in dashboard
 
 ---
 

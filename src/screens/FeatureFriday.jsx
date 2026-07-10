@@ -45,6 +45,7 @@ export function FeatureFriday({ go }) {
         <HowItWorks />
         <ERDiagramSection />
         <ShowcaseSection />
+        <FeaturesSection />
         <TechStackSection />
         <Footer />
       </main>
@@ -780,8 +781,8 @@ function ShowcaseStory() {
         Wave 01 · Direct Impact
       </div>
       <p className="font-body italic text-primary text-[11px] leading-relaxed mt-1.5">
-        “Petrol phir mehnga ho gaya. ₹4500 ka budget tha fuel ka, ab ₹5400 lagega.
-        Mahine ke end mein ₹900 ka shortfall.”
+        "Petrol phir mehnga ho gaya. ₹4500 ka budget tha fuel ka, ab ₹5400 lagega.
+        Mahine ke end mein ₹900 ka shortfall."
       </p>
       <div className="mt-3 space-y-1.5 font-mono text-[10px]">
         <div className="flex justify-between">
@@ -791,6 +792,187 @@ function ShowcaseStory() {
         <div className="flex justify-between">
           <span className="text-secondary">📊 Savings buffer</span>
           <span className="text-wave-amber">2.3 → 1.4 mo</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─────────────────────────── Features Section ─────────────────────────── */
+
+function FeaturesSection() {
+  const features = [
+    {
+      title: "Impact Dashboard",
+      description: "Real-time visualization of cascading economic impacts across the network. Watch vulnerability scores shift, dependencies break, and ripple effects spread through your society. Track every character's financial health as events unfold wave by wave.",
+      preview: <ImpactDashboardPreview />,
+    },
+    {
+      title: "Ask the Characters",
+      description: "Natural conversation with simulated characters. Ask Ramesh about his fuel costs, Priya about her scholarship, or anyone else about their daily struggles. Get nuanced, first-person responses in Hinglish that reveal the human side of policy impact.",
+      preview: <AskCharactersPreview />,
+    },
+    {
+      title: "Character Creation Wizard",
+      description: "Step-by-step guided creation of economic personas. Set income, expenses, EMI, and dependencies. Get real-time vulnerability scores and warnings for unrealistic profiles. Build your cast with full economic depth in minutes, not hours.",
+      preview: <CharacterWizardPreview />,
+    },
+  ];
+
+  return (
+    <section className="py-16 border-t border-subtle">
+      <h2 className="font-display font-semibold text-primary text-[28px] tracking-[-0.01em] text-center">
+        Key Features
+      </h2>
+      <p className="font-body text-secondary text-sm mt-2 text-center max-w-xl mx-auto">
+        Powerful tools designed to make societal impact simulation accessible and intuitive.
+      </p>
+      <div className="grid md:grid-cols-1 gap-10 mt-12">
+        {features.map((feature, i) => (
+          <motion.div
+            key={feature.title}
+            initial={{ opacity: 0, y: 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.5, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] }}
+            className={`grid md:grid-cols-2 gap-8 items-center ${i % 2 === 1 ? "md:flex-row-reverse" : ""}`}
+          >
+            <div className={i % 2 === 1 ? "md:order-2" : ""}>
+              <h3 className="font-display font-semibold text-primary text-2xl tracking-[-0.01em]">
+                {feature.title}
+              </h3>
+              <p className="font-body text-secondary text-[15px] leading-relaxed mt-4">
+                {feature.description}
+              </p>
+            </div>
+            <div className={`rounded-lg bg-surface border border-subtle overflow-hidden shadow-md ${i % 2 === 1 ? "md:order-1" : ""}`}>
+              {feature.preview}
+            </div>
+          </motion.div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function ImpactDashboardPreview() {
+  return (
+    <div className="aspect-video p-6 relative overflow-hidden" style={{ background: "linear-gradient(135deg, #111114 0%, #1a1a1f 100%)" }}>
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <span className="font-mono text-xs text-secondary uppercase tracking-[0.08em]">Wave 02</span>
+          <span className="font-mono text-xs text-wave-amber">+3 affected</span>
+        </div>
+        <div className="space-y-2">
+          {[
+            { name: "Ramesh", score: 75, color: TONE.red },
+            { name: "Priya", score: 62, color: TONE.orange },
+            { name: "Suresh", score: 45, color: TONE.amber },
+          ].map((c) => (
+            <div key={c.name} className="space-y-1">
+              <div className="flex justify-between text-xs">
+                <span className="text-primary font-medium">{c.name}</span>
+                <span style={{ color: c.color }}>{c.score}%</span>
+              </div>
+              <div className="h-2 bg-elevated rounded-full overflow-hidden">
+                <div
+                  className="h-full rounded-full transition-all"
+                  style={{ width: `${c.score}%`, backgroundColor: c.color }}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="mt-4 pt-4 border-t border-subtle text-xs text-secondary space-y-1">
+          <div className="flex justify-between">
+            <span>💰 Total savings at risk:</span>
+            <span className="text-wave-red">₹18,200</span>
+          </div>
+          <div className="flex justify-between">
+            <span>🔗 Broken dependencies:</span>
+            <span className="text-wave-orange">2</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function AskCharactersPreview() {
+  return (
+    <div className="aspect-video p-4 relative overflow-hidden" style={{ background: "linear-gradient(135deg, #111114 0%, #1a1a1f 100%)" }}>
+      <div className="space-y-3 h-full flex flex-col">
+        <div className="flex items-start gap-2">
+          <div className="h-6 w-6 rounded-full bg-accent-blue/20 border border-accent-blue flex items-center justify-center text-xs flex-none">
+            🚗
+          </div>
+          <div className="flex-1">
+            <div className="text-xs font-semibold text-accent-blue">Ramesh</div>
+            <p className="text-xs text-secondary mt-1 leading-relaxed">
+              "Petrol ke baad, ab diesel bhi badhne lag gaya. Mere business ka margin hi nahi reh gaya..."
+            </p>
+          </div>
+        </div>
+        <div className="flex items-start gap-2 justify-end">
+          <div className="flex-1 text-right">
+            <div className="text-xs font-semibold text-muted">You</div>
+            <p className="text-xs text-muted mt-1 leading-relaxed">
+              What if you raised fares?
+            </p>
+          </div>
+          <div className="h-6 w-6 rounded-full bg-muted/10 flex-none" />
+        </div>
+        <div className="flex items-start gap-2 flex-1 overflow-hidden">
+          <div className="h-6 w-6 rounded-full bg-wave-amber/20 border border-wave-amber flex items-center justify-center text-xs flex-none">
+            💭
+          </div>
+          <div className="flex-1">
+            <p className="text-xs text-wave-amber leading-relaxed italic">
+              "Raise fare? Phir customers jaenge Uber ya auto pool mein..."
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CharacterWizardPreview() {
+  return (
+    <div className="aspect-video p-6 relative overflow-hidden" style={{ background: "linear-gradient(135deg, #111114 0%, #1a1a1f 100%)" }}>
+      <div className="space-y-4">
+        <div className="text-center pb-4 border-b border-subtle">
+          <div className="text-3xl mb-2">🎓</div>
+          <div className="text-sm font-semibold text-primary">Create Character</div>
+          <div className="text-xs text-secondary mt-1">Step 3 of 4: Finances</div>
+        </div>
+        <div className="space-y-3">
+          <div>
+            <label className="text-xs uppercase tracking-[0.08em] text-secondary font-semibold">Income</label>
+            <div className="text-lg font-display font-bold text-accent-cyan mt-1">₹25,000/mo</div>
+          </div>
+          <div className="grid grid-cols-2 gap-2 text-xs">
+            <div className="p-2 bg-elevated rounded border border-subtle">
+              <div className="text-secondary">Fixed Expenses</div>
+              <div className="font-semibold text-primary">₹12,000</div>
+            </div>
+            <div className="p-2 bg-elevated rounded border border-subtle">
+              <div className="text-secondary">EMI</div>
+              <div className="font-semibold text-primary">₹5,000</div>
+            </div>
+          </div>
+          <div className="pt-2 border-t border-subtle">
+            <div className="flex justify-between text-xs mb-1">
+              <span className="text-secondary">Vulnerability</span>
+              <span className="font-semibold text-wave-amber">36%</span>
+            </div>
+            <div className="h-2 bg-elevated rounded-full overflow-hidden">
+              <div
+                className="h-full rounded-full bg-gradient-to-r"
+                style={{ width: "36%", backgroundImage: `linear-gradient(to right, ${TONE.green}, ${TONE.amber})` }}
+              />
+            </div>
+          </div>
         </div>
       </div>
     </div>

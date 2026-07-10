@@ -29,7 +29,7 @@ export function FeatureFriday({ go }) {
             <ArrowLeft className="h-4 w-4" />
           </button>
           <span className="font-display font-semibold text-lg text-primary">RIPPLE</span>
-          <Badge tone="blue" className="hidden sm:inline-flex">Feature Friday · Week 1</Badge>
+          <Badge tone="blue" className="hidden sm:inline-flex">Feature Friday </Badge>
           <span className="flex-1" />
           <GithubButton size="sm" />
           <Button variant="ghost" size="sm" onClick={() => go("builder")}>
@@ -78,7 +78,7 @@ function Hero() {
           transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
           className="inline-block"
         >
-          <Badge tone="blue">Feature Friday · Week 1</Badge>
+          <Badge tone="blue"> · Week 1</Badge>
         </motion.div>
         <motion.h1
           initial={{ opacity: 0, y: 8 }}
@@ -841,7 +841,7 @@ function Footer() {
         Every event has a face.
       </div>
       <div className="font-body text-muted text-xs mt-6 inline-flex items-center gap-1.5 justify-center">
-        Feature Friday · Week 1 · Built with
+        Feature Friday  Built with
         <Heart className="h-3 w-3 inline" style={{ color: TONE.red }} />
         and Claude
       </div>

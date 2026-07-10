@@ -8,6 +8,7 @@ import { Input } from "../components/ui/Input.jsx";
 import { Slider } from "../components/ui/Slider.jsx";
 import { AvatarToken } from "../components/ripple/AvatarToken.jsx";
 import { VulnerabilityBar } from "../components/ripple/VulnerabilityBar.jsx";
+import { CharacterWizard } from "../components/ripple/CharacterWizard.jsx";
 import {
   ARCHETYPES,
   DEMO_CHARACTERS,
@@ -46,6 +47,7 @@ export function SocietyBuilder({ go, onReady }) {
 
   const [selId, setSel] = useState(null);
   const [hov, setHov] = useState(null);
+  const [showWizard, setShowWizard] = useState(false);
   const selected = selId != null ? characters.find((c) => c.id === selId) : null;
 
   const updateChar = (id, patch) => {
@@ -82,6 +84,18 @@ export function SocietyBuilder({ go, onReady }) {
     };
     setStored((s) => ({ ...s, characters: [...s.characters, tmpl] }));
     setSel(id);
+  };
+
+  const addFromWizard = (profile) => {
+    const id = (characters.reduce((m, c) => Math.max(m, c.id), 0) || 0) + 1;
+    const character = {
+      id,
+      ...profile,
+      dependencies: [],
+    };
+    setStored((s) => ({ ...s, characters: [...s.characters, character] }));
+    setSel(id);
+    setShowWizard(false);
   };
 
   const resetSociety = () => {
@@ -243,14 +257,22 @@ export function SocietyBuilder({ go, onReady }) {
                   ))}
                 </div>
 
-                <div className="mt-6">
+                <div className="mt-6 space-y-3">
+                  <Button
+                    variant="primary"
+                    className="w-full"
+                    onClick={() => setShowWizard(true)}
+                    iconLeft={<Plus className="h-4 w-4" />}
+                  >
+                    Create Custom Character
+                  </Button>
                   <Button
                     variant="ghost"
                     className="w-full"
                     onClick={() => addFromArchetype("auto")}
                     iconLeft={<Plus className="h-4 w-4" />}
                   >
-                    Add new character
+                    Quick Add (Auto-rickshaw Driver)
                   </Button>
                 </div>
 
@@ -270,6 +292,16 @@ export function SocietyBuilder({ go, onReady }) {
           </AnimatePresence>
         </div>
       </div>
+
+      {/* Character Wizard Modal */}
+      <AnimatePresence>
+        {showWizard && (
+          <CharacterWizard
+            onCreate={addFromWizard}
+            onCancel={() => setShowWizard(false)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

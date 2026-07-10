@@ -50,6 +50,27 @@ function validateProfile(profile) {
   return { valid: errors.length === 0, errors, warnings };
 }
 
+// Step-specific validation
+function validateStep(step, profile) {
+  switch(step) {
+    case 1:
+      return !profile.name?.trim() ? ["Name is required"] : [];
+    case 2:
+      return !profile.archetype?.trim() ? ["Role/Archetype is required"] : [];
+    case 3:
+      const errors = [];
+      if (profile.income <= 0) errors.push("Income must be greater than 0");
+      if (profile.fixed < 0) errors.push("Fixed expenses cannot be negative");
+      if (profile.emi < 0) errors.push("EMI cannot be negative");
+      if (profile.savings < 0) errors.push("Savings cannot be negative");
+      return errors;
+    case 4:
+      return validateProfile(profile).errors;
+    default:
+      return [];
+  }
+}
+
 export function CharacterWizard({ onCreate, onCancel }) {
   const [step, setStep] = useState(1); // 1: emoji & name, 2: role, 3: finances, 4: review
   const [profile, setProfile] = useState({
@@ -63,10 +84,12 @@ export function CharacterWizard({ onCreate, onCancel }) {
     savings: 3000,
   });
 
-  const validation = validateProfile(profile);
+  const fullValidation = validateProfile(profile);
+  const stepErrors = validateStep(step, profile);
   const v = vulnerability(profile);
 
   const handleNext = () => {
+    if (stepErrors.length > 0) return;
     if (step < 4) {
       setStep(step + 1);
     } else {
@@ -124,6 +147,7 @@ export function CharacterWizard({ onCreate, onCancel }) {
                       {EMOJI_SUGGESTIONS.map((emoji) => (
                         <motion.button
                           key={emoji}
+                          type="button"
                           whileHover={{ scale: 1.1 }}
                           whileTap={{ scale: 0.95 }}
                           onClick={() => setProfile({ ...profile, emoji })}
@@ -188,6 +212,7 @@ export function CharacterWizard({ onCreate, onCancel }) {
                       {Object.entries(ARCHETYPES).map(([key, meta]) => (
                         <motion.button
                           key={key}
+                          type="button"
                           whileHover={{ x: 2 }}
                           onClick={() => setProfile({ ...profile, archetype: meta.label })}
                           className={`w-full p-3 rounded-lg border-2 transition-all text-left flex items-center gap-3 ${
@@ -238,6 +263,7 @@ export function CharacterWizard({ onCreate, onCancel }) {
                       {INCOME_BRACKETS.map((bracket) => (
                         <motion.button
                           key={bracket.name}
+                          type="button"
                           whileHover={{ scale: 1.02 }}
                           onClick={() => setProfile({ ...profile, income: (bracket.min + bracket.max) / 2 })}
                           className={`p-3 rounded-lg border-2 transition-all text-center ${
@@ -289,9 +315,9 @@ export function CharacterWizard({ onCreate, onCancel }) {
                   </div>
 
                   {/* Warnings */}
-                  {validation.warnings.length > 0 && (
+                  {fullValidation.warnings.length > 0 && (
                     <div className="space-y-2">
-                      {validation.warnings.map((warning, i) => (
+                      {fullValidation.warnings.map((warning, i) => (
                         <motion.div
                           key={i}
                           initial={{ opacity: 0, y: -4 }}
@@ -353,7 +379,7 @@ export function CharacterWizard({ onCreate, onCancel }) {
                     </Card>
                   </div>
 
-                  {validation.errors.length === 0 && (
+                  {stepErrors.length === 0 && (
                     <motion.div
                       initial={{ opacity: 0, y: -4 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -370,9 +396,9 @@ export function CharacterWizard({ onCreate, onCancel }) {
         </div>
 
         {/* Errors */}
-        {validation.errors.length > 0 && (
+        {stepErrors.length > 0 && (
           <div className="px-6 sm:px-8 py-4 bg-red-500/10 border-t border-red-500/30">
-            {validation.errors.map((error, i) => (
+            {stepErrors.map((error, i) => (
               <motion.div
                 key={i}
                 initial={{ opacity: 0 }}
@@ -410,7 +436,7 @@ export function CharacterWizard({ onCreate, onCancel }) {
             <Button
               variant="primary"
               size="sm"
-              disabled={validation.errors.length > 0}
+              disabled={stepErrors.length > 0}
               iconRight={step === 4 ? <CheckCircle2 className="h-3.5 w-3.5" /> : <ArrowRight className="h-3.5 w-3.5" />}
               onClick={handleNext}
             >

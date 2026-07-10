@@ -298,7 +298,7 @@ export function LandingScreen({ go }) {
       {/* Top chrome */}
       <div className="absolute top-5 left-6 right-6 z-20 flex items-center justify-between pointer-events-none">
         <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted pointer-events-auto">
-          v0.1 · Feature Friday W1
+          v0.4 · Feature Friday
         </div>
         <div className="pointer-events-auto">
           <GithubButton />

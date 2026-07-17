@@ -16,7 +16,7 @@ export async function simulateCascade({ event, characters, connections, signal }
   const userMsg = buildUserPrompt({ event, characters, connections });
 
   try {
-    const { text } = await callClaude({
+    const { text, provider } = await callClaude({
       system,
       messages: [{ role: "user", content: userMsg }],
       maxTokens: 3000,
@@ -24,7 +24,7 @@ export async function simulateCascade({ event, characters, connections, signal }
     });
     const parsed = extractJSON(text);
     if (!parsed?.waves?.length) throw new Error("malformed cascade");
-    return { source: "claude", cascade: parsed };
+    return { source: provider || "claude", cascade: parsed };
   } catch (err) {
     if (err?.name === "AbortError") throw err;
     console.warn("[ripple] cascade fell back to baked:", err.message);

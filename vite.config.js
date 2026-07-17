@@ -7,6 +7,12 @@ export default defineConfig(({ mode }) => {
   const apiKey = env.ANTHROPIC_API_KEY || "";
   const groqKey = env.GROQ_API_KEY || "";
   const hasKey = Boolean(apiKey || groqKey);
+  const preferred = String(env.VITE_AI_PROVIDER || "auto").toLowerCase();
+  let aiProvider = "baked";
+  if (preferred === "anthropic" && apiKey) aiProvider = "anthropic";
+  else if (preferred === "groq" && groqKey) aiProvider = "groq";
+  else if (apiKey) aiProvider = "anthropic";
+  else if (groqKey) aiProvider = "groq";
 
   return {
     plugins: [react()],
@@ -43,6 +49,8 @@ export default defineConfig(({ mode }) => {
     },
     define: {
       __HAS_ANTHROPIC_KEY__: JSON.stringify(Boolean(hasKey)),
+      __HAS_AI_KEY__: JSON.stringify(Boolean(hasKey)),
+      __AI_PROVIDER__: JSON.stringify(aiProvider),
     },
   };
 });

@@ -79,7 +79,7 @@ function Hero() {
           transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
           className="inline-block"
         >
-          <Badge tone="blue"> · Feature Friday Week 4</Badge>
+          <Badge tone="blue"> · Feature Friday Final Sprint</Badge>
         </motion.div>
         <motion.h1
           initial={{ opacity: 0, y: 8 }}
@@ -97,7 +97,7 @@ function Hero() {
           className="font-body text-secondary mt-4 max-w-[640px] mx-auto"
           style={{ fontSize: "clamp(16px, 1.4vw, 20px)" }}
         >
-          A multi-agent societal impact simulation engine. Every event has a face.
+          A multi-agent societal impact simulation engine with live relationship inference and intervention planning. Every event has a face.
         </motion.p>
         <motion.p
           initial={{ opacity: 0 }}
@@ -226,7 +226,7 @@ function HowItWorks() {
       title: "Build",
       glyph: <BuildGlyph />,
       body:
-        "Drop in everyday characters with real economic profiles — income, expenses, EMIs, savings, dependencies. Connect them: who serves whom, who buys from whom.",
+        "Drop in everyday characters with real economic profiles. New characters are now auto-linked into the social graph using role, income, and location so nobody enters the simulation isolated.",
     },
     {
       title: "Drop",
@@ -238,7 +238,7 @@ function HowItWorks() {
       title: "Watch",
       glyph: <WatchGlyph />,
       body:
-        "Sonar rings expand wave by wave across the network. Characters flash, decide, and emit their own ripples. Their stories unfold in first-person Hinglish.",
+        "Sonar rings expand wave by wave across the network. Then Intervention Lab projects how targeted support changes total losses and breaking points before the shock becomes irreversible.",
     },
   ];
   return (
@@ -803,9 +803,19 @@ function ShowcaseStory() {
 function FeaturesSection() {
   const features = [
     {
+      title: "Smart Connection Engine",
+      description: "Wizard-created characters are now stitched into the economy instantly. The engine infers high-probability links from archetype, income proximity, dependencies, and location. Judges get a realistic, non-fragile network without manual setup overhead.",
+      preview: <SmartConnectionsPreview />,
+    },
+    {
       title: "Impact Dashboard",
       description: "Real-time visualization of cascading economic impacts across the network. Watch vulnerability scores shift, dependencies break, and ripple effects spread through your society. Track every character's financial health as events unfold wave by wave.",
       preview: <ImpactDashboardPreview />,
+    },
+    {
+      title: "Intervention Lab",
+      description: "A policy sandbox inside the simulation. Pick a critical character, tune support budget, and instantly project prevented losses, reduced breaking points, and post-intervention recovery trajectories. This turns RIPPLE from storytelling into actionable planning.",
+      preview: <InterventionLabPreview />,
     },
     {
       title: "Ask the Characters",
@@ -891,6 +901,82 @@ function ImpactDashboardPreview() {
           <div className="flex justify-between">
             <span>🔗 Broken dependencies:</span>
             <span className="text-wave-orange">2</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SmartConnectionsPreview() {
+  const nodes = [
+    { e: "🚗", n: "Driver", x: 0.2, y: 0.3 },
+    { e: "🏪", n: "Store", x: 0.55, y: 0.28 },
+    { e: "🎓", n: "Student", x: 0.82, y: 0.48 },
+    { e: "☕", n: "Chai", x: 0.5, y: 0.72 },
+    { e: "🆕", n: "New", x: 0.22, y: 0.72 },
+  ];
+  const links = [
+    [0, 1, "solid"],
+    [1, 2, "solid"],
+    [1, 3, "solid"],
+    [4, 0, "inferred"],
+    [4, 3, "inferred"],
+  ];
+
+  return (
+    <div className="aspect-video p-4 relative overflow-hidden" style={{ background: "linear-gradient(135deg, #111114 0%, #1a1a1f 100%)" }}>
+      <svg viewBox="0 0 320 180" className="w-full h-full">
+        {links.map(([a, b, kind], i) => (
+          <line
+            key={i}
+            x1={nodes[a].x * 320}
+            y1={nodes[a].y * 180}
+            x2={nodes[b].x * 320}
+            y2={nodes[b].y * 180}
+            stroke={kind === "inferred" ? TONE.blue : "rgba(34,211,238,0.3)"}
+            strokeDasharray={kind === "inferred" ? "4 3" : "0"}
+            strokeWidth="1.4"
+          />
+        ))}
+        {nodes.map((node, i) => (
+          <g key={i}>
+            <circle cx={node.x * 320} cy={node.y * 180} r="13" fill="#15151a" stroke="rgba(34,211,238,0.55)" />
+            <text x={node.x * 320} y={node.y * 180 + 4} textAnchor="middle" fontSize="10">{node.e}</text>
+          </g>
+        ))}
+      </svg>
+      <div className="absolute bottom-3 left-4 font-mono text-[10px] text-secondary uppercase tracking-[0.12em]">
+        inferred links activate in under 1 sec
+      </div>
+    </div>
+  );
+}
+
+function InterventionLabPreview() {
+  return (
+    <div className="aspect-video p-5 relative overflow-hidden" style={{ background: "linear-gradient(135deg, #111114 0%, #1a1a1f 100%)" }}>
+      <div className="rounded-md border border-subtle bg-surface/70 p-3 space-y-3">
+        <div className="flex items-center justify-between">
+          <span className="font-body text-xs text-primary font-semibold">Intervention Lab</span>
+          <span className="font-mono text-[10px] text-accent-cyan">WHAT-IF</span>
+        </div>
+        <div className="space-y-1.5 text-xs">
+          <div className="flex justify-between">
+            <span className="text-secondary">Protect</span>
+            <span className="text-primary">🥛 Govind</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-secondary">Budget</span>
+            <span className="text-accent-cyan font-mono">₹52,000</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-secondary">Loss prevented</span>
+            <span className="text-wave-green font-mono">₹31,400</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-secondary">Breaking point</span>
+            <span className="text-wave-amber font-mono">5 to 3</span>
           </div>
         </div>
       </div>

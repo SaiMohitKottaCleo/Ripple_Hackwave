@@ -818,6 +818,11 @@ function FeaturesSection() {
       preview: <InterventionLabPreview />,
     },
     {
+      title: "Shock DNA + Portfolio Optimizer",
+      description: "Every event now gets a machine-readable Shock DNA profile (spread rate, concentration, persistence), then converts budget into a ranked intervention portfolio with projected savings. This gives judges measurable policy intelligence, not just visuals.",
+      preview: <ShockDNAPreview />,
+    },
+    {
       title: "Ask the Characters",
       description: "Natural conversation with simulated characters. Ask Ramesh about his fuel costs, Priya about her scholarship, or anyone else about their daily struggles. Get nuanced, first-person responses in Hinglish that reveal the human side of policy impact.",
       preview: <AskCharactersPreview />,
@@ -979,6 +984,33 @@ function InterventionLabPreview() {
             <span className="text-wave-amber font-mono">5 to 3</span>
           </div>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function ShockDNAPreview() {
+  return (
+    <div className="aspect-video p-5 relative overflow-hidden" style={{ background: "linear-gradient(135deg, #111114 0%, #1a1a1f 100%)" }}>
+      <div className="grid grid-cols-3 gap-2 mb-3">
+        <div className="rounded border border-subtle bg-surface p-2">
+          <div className="text-[10px] text-secondary uppercase">Spread</div>
+          <div className="text-sm text-primary font-bold">132%</div>
+        </div>
+        <div className="rounded border border-subtle bg-surface p-2">
+          <div className="text-[10px] text-secondary uppercase">Concentration</div>
+          <div className="text-sm text-primary font-bold">46%</div>
+        </div>
+        <div className="rounded border border-subtle bg-surface p-2">
+          <div className="text-[10px] text-secondary uppercase">Persistence</div>
+          <div className="text-sm text-primary font-bold">83%</div>
+        </div>
+      </div>
+      <div className="rounded-md border border-accent-cyan/30 bg-accent-cyan/5 p-2.5 text-xs space-y-1.5">
+        <div className="text-accent-cyan font-mono text-[10px] uppercase tracking-[0.1em]">Portfolio Optimizer</div>
+        <div className="flex justify-between"><span className="text-secondary">🥛 Govind</span><span className="text-primary font-mono">₹40K to ₹31K</span></div>
+        <div className="flex justify-between"><span className="text-secondary">🚗 Ramesh</span><span className="text-primary font-mono">₹30K to ₹18K</span></div>
+        <div className="pt-1 border-t border-subtle flex justify-between"><span className="text-secondary">Total protected</span><span className="text-wave-green font-mono">₹49K</span></div>
       </div>
     </div>
   );

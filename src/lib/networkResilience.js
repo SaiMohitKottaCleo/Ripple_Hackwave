@@ -197,6 +197,7 @@ export function analyzeNetworkResilience(characters, cascade, connections = []) 
   
   // Top 3 highest ROI interventions
   const topInterventions = interventionROI.slice(0, 3);
+  const shockDNA = computeShockDNA(cascade);
 
   return {
     // Fragility score: how vulnerable is the network?
@@ -217,6 +218,8 @@ export function analyzeNetworkResilience(characters, cascade, connections = []) 
       summary: `₹${(int.interventionCost / 1000).toFixed(1)}K to ${int.name} could save ₹${(int.costPrevented / 1000).toFixed(1)}K`,
     })),
 
+    shockDNA,
+
     // Network stats
     networkStats: {
       totalCharacters: characters.length,
@@ -224,6 +227,86 @@ export function analyzeNetworkResilience(characters, cascade, connections = []) 
       avgConnectionsPerCharacter: Object.values(graph).reduce((sum, set) => sum + set.size, 0) / characters.length,
       isolatedCharacters: Object.values(graph).filter(set => set.size === 0).length,
     },
+  };
+}
+
+function computeShockDNA(cascade) {
+  const waves = cascade?.waves || [];
+  if (!waves.length) {
+    return {
+      spreadRate: 0,
+      spreadLabel: "steady",
+      concentration: 0,
+      concentrationLabel: "distributed",
+      persistence: 0,
+      persistenceLabel: "short",
+    };
+  }
+
+  const counts = waves.map((w) => (w.impacts || []).length || 0);
+  const peak = Math.max(...counts);
+  const total = counts.reduce((a, b) => a + b, 0) || 1;
+
+  let transitions = 0;
+  for (let i = 1; i < counts.length; i++) {
+    if (counts[i - 1] > 0) transitions += counts[i] / counts[i - 1];
+  }
+
+  const spreadRate = counts.length > 1 ? Math.round((transitions / (counts.length - 1)) * 100) : counts[0] > 1 ? 100 : 20;
+  const concentration = Math.round((peak / total) * 100);
+  const persistence = Math.round((counts.filter((x) => x > 0).length / counts.length) * 100);
+
+  return {
+    spreadRate,
+    spreadLabel: spreadRate > 120 ? "explosive" : spreadRate > 80 ? "fast" : "contained",
+    concentration,
+    concentrationLabel: concentration > 45 ? "single-node heavy" : "distributed",
+    persistence,
+    persistenceLabel: persistence > 80 ? "long-tail" : persistence > 55 ? "multi-wave" : "short",
+  };
+}
+
+export function buildResilienceBlueprint({ characters, cascade, connections = [], totalBudget = 0 }) {
+  const analysis = analyzeNetworkResilience(characters, cascade, connections);
+  if (!analysis?.interventions?.length) {
+    return {
+      budget: totalBudget,
+      allocated: 0,
+      projectedSavings: 0,
+      plans: [],
+    };
+  }
+
+  const ranked = [...analysis.interventions].sort((a, b) => b.roi - a.roi);
+  let remaining = Math.max(0, totalBudget);
+  const plans = [];
+  let projectedSavings = 0;
+
+  ranked.forEach((row, idx) => {
+    if (remaining <= 0 || idx >= 4) return;
+    const ask = row.interventionCost;
+    const grant = Math.min(ask, remaining);
+    if (grant <= 0) return;
+    const ratio = ask > 0 ? grant / ask : 0;
+    const projected = Math.round(row.costPrevented * ratio);
+    projectedSavings += projected;
+    remaining -= grant;
+    plans.push({
+      id: row.id,
+      name: row.name,
+      emoji: row.emoji,
+      grant,
+      projectedSavings: projected,
+      roi: row.roi,
+      tone: row.tone,
+    });
+  });
+
+  return {
+    budget: totalBudget,
+    allocated: totalBudget - remaining,
+    projectedSavings,
+    plans,
   };
 }
 

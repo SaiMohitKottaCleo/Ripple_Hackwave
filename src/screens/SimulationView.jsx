@@ -18,7 +18,7 @@ import { ImpactDashboard } from "../components/ripple/ImpactDashboard.jsx";
 import { StoryPanel } from "./StoryPanel.jsx";
 import { useReducedMotion } from "../hooks/useReducedMotion.js";
 import { simulateCascade } from "../lib/cascade.js";
-import { analyzeNetworkResilience, estimateInterventionImpact } from "../lib/networkResilience.js";
+import { analyzeNetworkResilience, buildResilienceBlueprint, estimateInterventionImpact } from "../lib/networkResilience.js";
 import { vulnerability } from "../data/society.js";
 
 const TONE = {
@@ -146,6 +146,7 @@ export function SimulationView({ go, event, society }) {
   const [showIntervention, setShowIntervention] = useState(false);
   const [protectedId, setProtectedId] = useState(null);
   const [budgetFactor, setBudgetFactor] = useState(1);
+  const [portfolioBudget, setPortfolioBudget] = useState(60000);
   const [chrome, setChrome] = useState(true);
   const [selId, setSelId] = useState(null);
   const timersRef = useRef([]);
@@ -242,6 +243,16 @@ export function SimulationView({ go, event, society }) {
       budget: Math.round((protectedCharacter.income || 0) * budgetFactor),
     };
   }, [budgetFactor, cascade, characters, protectedCharacter]);
+
+  const portfolioPlan = useMemo(() => {
+    if (!cascade) return null;
+    return buildResilienceBlueprint({
+      characters,
+      cascade,
+      connections,
+      totalBudget: portfolioBudget,
+    });
+  }, [cascade, characters, connections, portfolioBudget]);
 
   const selImpacts = useMemo(() => {
     if (!cascade || selId == null) return [];
@@ -628,6 +639,38 @@ export function SimulationView({ go, event, society }) {
               ) : (
                 <p className="font-body text-xs text-muted mt-3">Pick a recommended character to run a projection.</p>
               )}
+
+              <div className="mt-3 rounded-md border border-accent-cyan/30 bg-accent-cyan/5 p-3">
+                <div className="flex items-center justify-between text-xs mb-2">
+                  <span className="text-accent-cyan font-mono uppercase tracking-[0.1em]">Portfolio Optimizer</span>
+                  <span className="font-mono text-primary">₹{portfolioBudget.toLocaleString("en-IN")}</span>
+                </div>
+                <input
+                  type="range"
+                  min="20000"
+                  max="200000"
+                  step="5000"
+                  value={portfolioBudget}
+                  onChange={(e) => setPortfolioBudget(Number(e.target.value))}
+                  className="w-full"
+                />
+                {portfolioPlan?.plans?.length ? (
+                  <div className="mt-2.5 space-y-1.5">
+                    {portfolioPlan.plans.slice(0, 3).map((plan) => (
+                      <div key={plan.id} className="flex justify-between text-xs">
+                        <span className="text-primary">{plan.emoji} {plan.name}</span>
+                        <span className="font-mono text-secondary">₹{plan.grant.toLocaleString("en-IN")} to ₹{plan.projectedSavings.toLocaleString("en-IN")}</span>
+                      </div>
+                    ))}
+                    <div className="pt-1.5 border-t border-subtle flex justify-between text-xs">
+                      <span className="text-secondary">Projected cascade loss prevented</span>
+                      <span className="font-mono text-wave-green">₹{portfolioPlan.projectedSavings.toLocaleString("en-IN")}</span>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-xs text-muted mt-2">No portfolio recommendations yet.</p>
+                )}
+              </div>
             </Card>
           </motion.div>
         )}

@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { TrendingDown, TrendingUp, Users, Waves, AlertTriangle, BarChart3 } from "lucide-react";
-import { analyzeNetworkResilience } from "../../lib/networkResilience.js";
+import { analyzeNetworkResilience, buildResilienceBlueprint } from "../../lib/networkResilience.js";
 import { NetworkResilience } from "./NetworkResilience.jsx";
 
 const TONE_COLORS = {
@@ -35,6 +35,12 @@ export function ImpactDashboard({ cascade, characters, connections = [] }) {
     ? characters.reduce((sum, c) => sum + (c.savings || 0), 0) / characters.length
     : 0;
   const healthScore = avgIncome > 0 ? Math.round((avgSavings / avgIncome) * 100) : 0;
+  const blueprint = buildResilienceBlueprint({
+    characters,
+    cascade,
+    connections,
+    totalBudget: Math.round(avgIncome * 2),
+  });
 
   const metrics = [
     {
@@ -205,6 +211,50 @@ export function ImpactDashboard({ cascade, characters, connections = [] }) {
         >
           <h3 className="font-display font-bold text-lg text-primary mb-4">The Invisible Chain</h3>
           <NetworkResilience analysis={networkAnalysis} />
+
+          {networkAnalysis.shockDNA && (
+            <div className="mt-6 rounded-lg border border-subtle bg-elevated/40 p-4">
+              <p className="text-xs text-secondary uppercase tracking-wider font-mono mb-3">Shock DNA</p>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="rounded-md border border-subtle bg-surface p-3">
+                  <div className="text-[11px] text-secondary uppercase tracking-[0.08em]">Spread Rate</div>
+                  <div className="font-display font-bold text-lg text-primary mt-1">{networkAnalysis.shockDNA.spreadRate}%</div>
+                  <div className="text-[11px] text-muted mt-1">{networkAnalysis.shockDNA.spreadLabel}</div>
+                </div>
+                <div className="rounded-md border border-subtle bg-surface p-3">
+                  <div className="text-[11px] text-secondary uppercase tracking-[0.08em]">Concentration</div>
+                  <div className="font-display font-bold text-lg text-primary mt-1">{networkAnalysis.shockDNA.concentration}%</div>
+                  <div className="text-[11px] text-muted mt-1">{networkAnalysis.shockDNA.concentrationLabel}</div>
+                </div>
+                <div className="rounded-md border border-subtle bg-surface p-3">
+                  <div className="text-[11px] text-secondary uppercase tracking-[0.08em]">Persistence</div>
+                  <div className="font-display font-bold text-lg text-primary mt-1">{networkAnalysis.shockDNA.persistence}%</div>
+                  <div className="text-[11px] text-muted mt-1">{networkAnalysis.shockDNA.persistenceLabel}</div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {blueprint.plans.length > 0 && (
+            <div className="mt-6 rounded-lg border border-accent-cyan/30 bg-accent-cyan/5 p-4">
+              <p className="text-xs text-accent-cyan uppercase tracking-wider font-mono mb-2">Resilience Blueprint</p>
+              <p className="text-xs text-secondary mb-3">
+                With a fast-response budget of ₹{blueprint.budget.toLocaleString("en-IN")}, allocate to the top nodes below.
+              </p>
+              <div className="space-y-2.5">
+                {blueprint.plans.map((p) => (
+                  <div key={p.id} className="flex items-center justify-between rounded-md border border-subtle bg-surface px-3 py-2">
+                    <span className="text-xs text-primary">{p.emoji} {p.name}</span>
+                    <span className="text-[11px] font-mono text-secondary">₹{p.grant.toLocaleString("en-IN")} to ₹{p.projectedSavings.toLocaleString("en-IN")}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-3 pt-2 border-t border-subtle flex justify-between text-xs">
+                <span className="text-secondary">Projected protection</span>
+                <span className="font-mono text-wave-green">₹{blueprint.projectedSavings.toLocaleString("en-IN")}</span>
+              </div>
+            </div>
+          )}
         </motion.div>
       )}
     </motion.div>

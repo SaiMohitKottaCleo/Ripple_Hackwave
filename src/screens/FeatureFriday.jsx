@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowLeft, Github, Heart } from "lucide-react";
 import { Button } from "../components/ui/Button.jsx";
@@ -41,6 +41,8 @@ export function FeatureFriday({ go }) {
 
       <main className="max-w-[1120px] mx-auto px-4 sm:px-8 pb-24">
         <Hero />
+        <SprintHighlights />
+        <JudgeModeSection />
         <Problem />
         <HowItWorks />
         <ERDiagramSection />
@@ -50,6 +52,199 @@ export function FeatureFriday({ go }) {
         <Footer />
       </main>
     </div>
+  );
+}
+
+function SprintHighlights() {
+  const shipped = [
+    "Smart Connection Engine",
+    "Manual Connection Editor",
+    "Intervention Lab",
+    "Shock DNA Metrics",
+    "Portfolio Optimizer",
+    "Judge Mode Visuals",
+  ];
+
+  return (
+    <section className="pt-2 pb-8">
+      <div className="rounded-lg border border-accent-cyan/30 bg-accent-cyan/5 p-4 sm:p-5">
+        <div className="flex flex-wrap items-center gap-2 mb-2">
+          <Badge tone="cyan">Updated Feature Friday</Badge>
+          <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-secondary">
+            These are the features we worked on in this sprint
+          </span>
+        </div>
+        <p className="font-body text-sm text-secondary mb-3">
+          Judges can scan this section first, then jump into visuals and live demo flow below.
+        </p>
+        <div className="flex flex-wrap gap-2">
+          {shipped.map((x) => (
+            <span
+              key={x}
+              className="inline-flex items-center rounded-full border border-subtle bg-surface px-3 py-1.5 font-body text-xs text-primary"
+            >
+              {x}
+            </span>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─────────────────────────── Judge Mode ─────────────────────────── */
+
+function JudgeModeSection() {
+  const reduced = useReducedMotion();
+  const kpis = [
+    { label: "Time to explain value", value: 38, unit: "sec", tone: "cyan" },
+    { label: "Scenario depth", value: 4, unit: "waves", tone: "amber" },
+    { label: "Policy options compared", value: 3, unit: "paths", tone: "green" },
+    { label: "Human narratives", value: 8, unit: "voices", tone: "blue" },
+  ];
+
+  const duel = [
+    { name: "No intervention", loss: 100, break: 100, color: "rgba(239,68,68,0.9)" },
+    { name: "Single-node support", loss: 71, break: 62, color: "rgba(245,158,11,0.9)" },
+    { name: "Portfolio optimizer", loss: 49, break: 38, color: "rgba(34,197,94,0.9)" },
+  ];
+
+  return (
+    <section className="py-14 border-t border-subtle">
+      <div className="text-center max-w-[820px] mx-auto">
+        <Badge tone="blue">Judge Mode</Badge>
+        <h2 className="font-display font-semibold text-primary text-3xl tracking-[-0.01em] mt-4">
+          Win the Room in 60 Seconds
+        </h2>
+        <p className="font-body text-secondary text-sm mt-3">
+          This is the exact sequence for a finals-stage demo: show the shock, show the human impact,
+          then show the best intervention portfolio with measurable damage reduction.
+        </p>
+      </div>
+
+      <div className="grid lg:grid-cols-[1fr_1.2fr] gap-5 mt-8">
+        <div className="rounded-lg border border-subtle bg-surface p-4 sm:p-5">
+          <div className="font-mono text-[11px] uppercase tracking-[0.14em] text-secondary mb-3">
+            Demo KPI Card
+          </div>
+          <div className="grid sm:grid-cols-2 gap-3">
+            {kpis.map((k, i) => (
+              <div key={k.label} className="rounded-md border border-subtle bg-elevated/40 p-3">
+                <div className="text-[11px] text-secondary uppercase tracking-[0.08em]">{k.label}</div>
+                <div className="mt-2 flex items-end gap-1.5">
+                  <AnimatedValue
+                    to={k.value}
+                    duration={reduced ? 0 : 900 + i * 160}
+                    className="font-display font-bold text-2xl"
+                    style={{ color: toneColor(k.tone) }}
+                  />
+                  <span className="font-mono text-[11px] text-muted mb-1">{k.unit}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="rounded-lg border border-subtle bg-surface p-4 sm:p-5">
+          <div className="flex items-center justify-between mb-3">
+            <div className="font-mono text-[11px] uppercase tracking-[0.14em] text-secondary">
+              Policy Duel Visualization
+            </div>
+            <div className="text-[11px] font-mono text-muted uppercase tracking-[0.08em]">
+              lower is better
+            </div>
+          </div>
+
+          <div className="space-y-3.5">
+            {duel.map((row, i) => (
+              <motion.div
+                key={row.name}
+                initial={{ opacity: 0, y: 8 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.35, delay: i * 0.08 }}
+                className="rounded-md border border-subtle bg-elevated/30 p-3"
+              >
+                <div className="flex items-center justify-between text-xs mb-2">
+                  <span className="text-primary font-medium">{row.name}</span>
+                  <span className="text-secondary font-mono">loss {row.loss}% · breaking {row.break}%</span>
+                </div>
+                <div className="space-y-1.5">
+                  <div>
+                    <div className="h-2 rounded-full bg-void overflow-hidden">
+                      <motion.div
+                        initial={{ width: 0 }}
+                        whileInView={{ width: `${row.loss}%` }}
+                        viewport={{ once: true }}
+                        transition={{ duration: reduced ? 0 : 0.7, delay: i * 0.08 }}
+                        className="h-full rounded-full"
+                        style={{ background: row.color }}
+                      />
+                    </div>
+                    <div className="text-[10px] text-muted mt-1">Income loss footprint</div>
+                  </div>
+                  <div>
+                    <div className="h-2 rounded-full bg-void overflow-hidden">
+                      <motion.div
+                        initial={{ width: 0 }}
+                        whileInView={{ width: `${row.break}%` }}
+                        viewport={{ once: true }}
+                        transition={{ duration: reduced ? 0 : 0.7, delay: i * 0.08 + 0.08 }}
+                        className="h-full rounded-full"
+                        style={{ background: "rgba(74,124,255,0.9)" }}
+                      />
+                    </div>
+                    <div className="text-[10px] text-muted mt-1">Breaking-point exposure</div>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function toneColor(tone) {
+  if (tone === "cyan") return TONE.cyan;
+  if (tone === "amber") return TONE.amber;
+  if (tone === "green") return TONE.green;
+  if (tone === "blue") return TONE.blue;
+  return "var(--text-primary)";
+}
+
+function AnimatedValue({ to, duration = 900, className, style }) {
+  const [value, setValue] = useState(0);
+  const rafRef = useRef(null);
+
+  useEffect(() => {
+    if (!duration) {
+      setValue(to);
+      return;
+    }
+    const start = performance.now();
+    const from = 0;
+
+    const tick = (now) => {
+      const t = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - t, 3);
+      setValue(Math.round(from + (to - from) * eased));
+      if (t < 1) {
+        rafRef.current = requestAnimationFrame(tick);
+      }
+    };
+
+    rafRef.current = requestAnimationFrame(tick);
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
+  }, [to, duration]);
+
+  return (
+    <span className={className} style={style}>
+      {value}
+    </span>
   );
 }
 

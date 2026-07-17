@@ -283,7 +283,7 @@ function PreviewCard() {
 /* ───────────── Landing ───────────── */
 export function LandingScreen({ go }) {
   return (
-    <div className="relative h-full overflow-hidden bg-void">
+    <div className="relative h-full overflow-y-auto bg-void">
       <ParticleField />
 
       {/* Subtle radial vignette so content reads cleanly over the particles */}
@@ -298,7 +298,7 @@ export function LandingScreen({ go }) {
       {/* Top chrome */}
       <div className="absolute top-5 left-6 right-6 z-20 flex items-center justify-between pointer-events-none">
         <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted pointer-events-auto">
-          v0.4 · Feature Friday
+          v0.5 · Feature Friday Updated
         </div>
         <div className="pointer-events-auto">
           <GithubButton />
@@ -306,8 +306,8 @@ export function LandingScreen({ go }) {
       </div>
 
       {/* Hero column */}
-      <div className="relative z-10 h-full flex items-center justify-center px-6">
-        <div className="w-full max-w-[680px] flex flex-col items-center text-center">
+      <div className="relative z-10 min-h-full flex items-start lg:items-center justify-center px-4 sm:px-6 pt-20 pb-12">
+        <div className="w-full max-w-[720px] flex flex-col items-center text-center">
           <motion.div
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
@@ -324,12 +324,24 @@ export function LandingScreen({ go }) {
             transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
             className="font-display font-bold text-primary mt-5 leading-none tracking-[-0.03em]"
             style={{
-              fontSize: "clamp(56px, 9vw, 104px)",
+              fontSize: "clamp(44px, 8.5vw, 104px)",
               textShadow: "0 0 80px rgba(74,124,255,0.18)",
             }}
           >
             RIPPLE
           </motion.h1>
+
+          <motion.div
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            className="mt-3 inline-flex items-center gap-2 rounded-full border border-accent-cyan/40 bg-accent-cyan/10 px-3 py-1"
+          >
+            <span className="h-1.5 w-1.5 rounded-full bg-accent-cyan" />
+            <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-accent-cyan">
+              Feature Friday Updated: New judge-mode visualizations live
+            </span>
+          </motion.div>
 
           <motion.p
             initial={{ opacity: 0, y: 6 }}
@@ -365,7 +377,7 @@ export function LandingScreen({ go }) {
               Launch Simulation
             </Button>
             <Button variant="outline" size="lg" onClick={() => go("feature")}>
-              Feature Friday
+              Feature Friday (Updated)
             </Button>
             <Button variant="outline" size="lg" onClick={() => go("chat")}>
               Ask the Characters
@@ -375,18 +387,61 @@ export function LandingScreen({ go }) {
           <motion.div
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 1.0, ease: [0.16, 1, 0.3, 1] }}
-            className="w-full mt-10"
+            transition={{ duration: 0.65, delay: 0.9, ease: [0.16, 1, 0.3, 1] }}
+            className="w-full mt-6"
+          >
+            <div className="mx-auto max-w-[640px] rounded-md border border-subtle bg-surface/65 backdrop-blur px-4 py-3">
+              <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-secondary text-left">
+                Judge Quick Path (60 sec)
+              </div>
+              <div className="mt-2 grid gap-2 sm:grid-cols-3">
+                <button
+                  type="button"
+                  onClick={() => go("feature")}
+                  className="rounded border border-subtle bg-elevated/40 px-2.5 py-2 text-left hover:border-active transition-colors"
+                >
+                  <div className="font-mono text-[10px] text-muted uppercase tracking-[0.1em]">Step 1</div>
+                  <div className="font-body text-xs text-primary mt-0.5">Open updated Feature Friday</div>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => go("builder")}
+                  className="rounded border border-subtle bg-elevated/40 px-2.5 py-2 text-left hover:border-active transition-colors"
+                >
+                  <div className="font-mono text-[10px] text-muted uppercase tracking-[0.1em]">Step 2</div>
+                  <div className="font-body text-xs text-primary mt-0.5">Run one live shock simulation</div>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => go("chat")}
+                  className="rounded border border-subtle bg-elevated/40 px-2.5 py-2 text-left hover:border-active transition-colors"
+                >
+                  <div className="font-mono text-[10px] text-muted uppercase tracking-[0.1em]">Step 3</div>
+                  <div className="font-body text-xs text-primary mt-0.5">Ask characters for human impact</div>
+                </button>
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 1.05, ease: [0.16, 1, 0.3, 1] }}
+            className="w-full mt-8 sm:mt-10"
           >
             <PreviewCard />
           </motion.div>
-        </div>
-      </div>
 
-      {/* Footer ticker */}
-      <div className="absolute bottom-5 left-0 right-0 z-10 text-center pointer-events-none">
-        <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted">
-          8 characters &nbsp;·&nbsp; 8 events &nbsp;·&nbsp; 3 waves &nbsp;·&nbsp; 1 Claude
+          <motion.div
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.55, delay: 1.12, ease: [0.16, 1, 0.3, 1] }}
+            className="w-full mt-7 pb-3"
+          >
+            <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted text-center">
+              8 characters · 8 events · 3 waves · 1 Claude
+            </div>
+          </motion.div>
         </div>
       </div>
     </div>

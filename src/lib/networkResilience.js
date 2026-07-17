@@ -10,12 +10,20 @@
  * Build a character dependency graph
  * Returns adjacency map: { characterId: [connectedIds] }
  */
-function buildDependencyGraph(characters, cascade) {
+function buildDependencyGraph(characters, cascade, connections = []) {
   const graph = {};
   
   // Initialize
   characters.forEach(c => {
     graph[c.id] = new Set();
+  });
+
+  // Seed graph from explicit character links in the builder.
+  connections.forEach((e) => {
+    if (graph[e.a] && graph[e.b]) {
+      graph[e.a].add(e.b);
+      graph[e.b].add(e.a);
+    }
   });
 
   // If cascade has waves with impacts, extract dependency patterns
@@ -138,7 +146,7 @@ function findCriticalNodes(graph, characters, cascade) {
  * Calculate intervention ROI for each character
  * ROI = (total cascade cost prevented) / (intervention cost)
  */
-function calculateInterventionROI(characters, cascade) {
+function calculateInterventionROI(characters, cascade, graph) {
   if (!cascade?.summary) return [];
 
   const totalIncomeLost = cascade.summary.incomeLost || 0;
@@ -147,8 +155,9 @@ function calculateInterventionROI(characters, cascade) {
 
   return characters.map(c => {
     // Estimate: protecting this character prevents their dependent losses
-    const connections = 1; // Simplified
-    const estimatedCostsPrevented = avgLossPerPerson * connections;
+    const connections = graph[c.id]?.size || 0;
+    const centralityWeight = Math.max(0.6, Math.min(2, connections / 2));
+    const estimatedCostsPrevented = avgLossPerPerson * Math.max(1, connections) * centralityWeight;
     
     // Rough intervention cost: 1-2 months of their income as emergency support
     const interventionCost = c.income * 1.5;
@@ -173,21 +182,22 @@ function calculateInterventionROI(characters, cascade) {
  * Main analysis function
  * Returns comprehensive network resilience report
  */
-export function analyzeNetworkResilience(characters, cascade) {
+export function analyzeNetworkResilience(characters, cascade, connections = []) {
   if (!characters?.length || !cascade?.waves) {
     return null;
   }
 
-  const graph = buildDependencyGraph(characters, cascade);
+  const graph = buildDependencyGraph(characters, cascade, connections);
   const fragility = calculateFragilityScore(graph, characters);
   const criticalNodes = findCriticalNodes(graph, characters, cascade);
-  const interventionROI = calculateInterventionROI(characters, cascade);
+  const interventionROI = calculateInterventionROI(characters, cascade, graph);
 
   // Top 3 most critical: protect these to stabilize network
   const topCritical = criticalNodes.slice(0, 3);
   
   // Top 3 highest ROI interventions
   const topInterventions = interventionROI.slice(0, 3);
+  const shockDNA = computeShockDNA(cascade);
 
   return {
     // Fragility score: how vulnerable is the network?
@@ -208,13 +218,95 @@ export function analyzeNetworkResilience(characters, cascade) {
       summary: `₹${(int.interventionCost / 1000).toFixed(1)}K to ${int.name} could save ₹${(int.costPrevented / 1000).toFixed(1)}K`,
     })),
 
+    shockDNA,
+
     // Network stats
     networkStats: {
       totalCharacters: characters.length,
-      connectedPairs: Array.from(graph).reduce((sum, [_, set]) => sum + set.size, 0) / 2,
-      avgConnectionsPerCharacter: Array.from(graph).reduce((sum, [_, set]) => sum + set.size, 0) / characters.length,
+      connectedPairs: Object.values(graph).reduce((sum, set) => sum + set.size, 0) / 2,
+      avgConnectionsPerCharacter: Object.values(graph).reduce((sum, set) => sum + set.size, 0) / characters.length,
       isolatedCharacters: Object.values(graph).filter(set => set.size === 0).length,
     },
+  };
+}
+
+function computeShockDNA(cascade) {
+  const waves = cascade?.waves || [];
+  if (!waves.length) {
+    return {
+      spreadRate: 0,
+      spreadLabel: "steady",
+      concentration: 0,
+      concentrationLabel: "distributed",
+      persistence: 0,
+      persistenceLabel: "short",
+    };
+  }
+
+  const counts = waves.map((w) => (w.impacts || []).length || 0);
+  const peak = Math.max(...counts);
+  const total = counts.reduce((a, b) => a + b, 0) || 1;
+
+  let transitions = 0;
+  for (let i = 1; i < counts.length; i++) {
+    if (counts[i - 1] > 0) transitions += counts[i] / counts[i - 1];
+  }
+
+  const spreadRate = counts.length > 1 ? Math.round((transitions / (counts.length - 1)) * 100) : counts[0] > 1 ? 100 : 20;
+  const concentration = Math.round((peak / total) * 100);
+  const persistence = Math.round((counts.filter((x) => x > 0).length / counts.length) * 100);
+
+  return {
+    spreadRate,
+    spreadLabel: spreadRate > 120 ? "explosive" : spreadRate > 80 ? "fast" : "contained",
+    concentration,
+    concentrationLabel: concentration > 45 ? "single-node heavy" : "distributed",
+    persistence,
+    persistenceLabel: persistence > 80 ? "long-tail" : persistence > 55 ? "multi-wave" : "short",
+  };
+}
+
+export function buildResilienceBlueprint({ characters, cascade, connections = [], totalBudget = 0 }) {
+  const analysis = analyzeNetworkResilience(characters, cascade, connections);
+  if (!analysis?.interventions?.length) {
+    return {
+      budget: totalBudget,
+      allocated: 0,
+      projectedSavings: 0,
+      plans: [],
+    };
+  }
+
+  const ranked = [...analysis.interventions].sort((a, b) => b.roi - a.roi);
+  let remaining = Math.max(0, totalBudget);
+  const plans = [];
+  let projectedSavings = 0;
+
+  ranked.forEach((row, idx) => {
+    if (remaining <= 0 || idx >= 4) return;
+    const ask = row.interventionCost;
+    const grant = Math.min(ask, remaining);
+    if (grant <= 0) return;
+    const ratio = ask > 0 ? grant / ask : 0;
+    const projected = Math.round(row.costPrevented * ratio);
+    projectedSavings += projected;
+    remaining -= grant;
+    plans.push({
+      id: row.id,
+      name: row.name,
+      emoji: row.emoji,
+      grant,
+      projectedSavings: projected,
+      roi: row.roi,
+      tone: row.tone,
+    });
+  });
+
+  return {
+    budget: totalBudget,
+    allocated: totalBudget - remaining,
+    projectedSavings,
+    plans,
   };
 }
 

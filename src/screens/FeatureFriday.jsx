@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowLeft, Github, Heart } from "lucide-react";
 import { Button } from "../components/ui/Button.jsx";
@@ -41,6 +41,8 @@ export function FeatureFriday({ go }) {
 
       <main className="max-w-[1120px] mx-auto px-4 sm:px-8 pb-24">
         <Hero />
+        <SprintHighlights />
+        <JudgeModeSection />
         <Problem />
         <HowItWorks />
         <ERDiagramSection />
@@ -50,6 +52,199 @@ export function FeatureFriday({ go }) {
         <Footer />
       </main>
     </div>
+  );
+}
+
+function SprintHighlights() {
+  const shipped = [
+    "Smart Connection Engine",
+    "Manual Connection Editor",
+    "Intervention Lab",
+    "Shock DNA Metrics",
+    "Portfolio Optimizer",
+    "Judge Mode Visuals",
+  ];
+
+  return (
+    <section className="pt-2 pb-8">
+      <div className="rounded-lg border border-accent-cyan/30 bg-accent-cyan/5 p-4 sm:p-5">
+        <div className="flex flex-wrap items-center gap-2 mb-2">
+          <Badge tone="cyan">Updated Feature Friday</Badge>
+          <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-secondary">
+            These are the features we worked on in this sprint
+          </span>
+        </div>
+        <p className="font-body text-sm text-secondary mb-3">
+          Judges can scan this section first, then jump into visuals and live demo flow below.
+        </p>
+        <div className="flex flex-wrap gap-2">
+          {shipped.map((x) => (
+            <span
+              key={x}
+              className="inline-flex items-center rounded-full border border-subtle bg-surface px-3 py-1.5 font-body text-xs text-primary"
+            >
+              {x}
+            </span>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─────────────────────────── Judge Mode ─────────────────────────── */
+
+function JudgeModeSection() {
+  const reduced = useReducedMotion();
+  const kpis = [
+    { label: "Time to explain value", value: 38, unit: "sec", tone: "cyan" },
+    { label: "Scenario depth", value: 4, unit: "waves", tone: "amber" },
+    { label: "Policy options compared", value: 3, unit: "paths", tone: "green" },
+    { label: "Human narratives", value: 8, unit: "voices", tone: "blue" },
+  ];
+
+  const duel = [
+    { name: "No intervention", loss: 100, break: 100, color: "rgba(239,68,68,0.9)" },
+    { name: "Single-node support", loss: 71, break: 62, color: "rgba(245,158,11,0.9)" },
+    { name: "Portfolio optimizer", loss: 49, break: 38, color: "rgba(34,197,94,0.9)" },
+  ];
+
+  return (
+    <section className="py-14 border-t border-subtle">
+      <div className="text-center max-w-[820px] mx-auto">
+        <Badge tone="blue">Judge Mode</Badge>
+        <h2 className="font-display font-semibold text-primary text-3xl tracking-[-0.01em] mt-4">
+          Win the Room in 60 Seconds
+        </h2>
+        <p className="font-body text-secondary text-sm mt-3">
+          This is the exact sequence for a finals-stage demo: show the shock, show the human impact,
+          then show the best intervention portfolio with measurable damage reduction.
+        </p>
+      </div>
+
+      <div className="grid lg:grid-cols-[1fr_1.2fr] gap-5 mt-8">
+        <div className="rounded-lg border border-subtle bg-surface p-4 sm:p-5">
+          <div className="font-mono text-[11px] uppercase tracking-[0.14em] text-secondary mb-3">
+            Demo KPI Card
+          </div>
+          <div className="grid sm:grid-cols-2 gap-3">
+            {kpis.map((k, i) => (
+              <div key={k.label} className="rounded-md border border-subtle bg-elevated/40 p-3">
+                <div className="text-[11px] text-secondary uppercase tracking-[0.08em]">{k.label}</div>
+                <div className="mt-2 flex items-end gap-1.5">
+                  <AnimatedValue
+                    to={k.value}
+                    duration={reduced ? 0 : 900 + i * 160}
+                    className="font-display font-bold text-2xl"
+                    style={{ color: toneColor(k.tone) }}
+                  />
+                  <span className="font-mono text-[11px] text-muted mb-1">{k.unit}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="rounded-lg border border-subtle bg-surface p-4 sm:p-5">
+          <div className="flex items-center justify-between mb-3">
+            <div className="font-mono text-[11px] uppercase tracking-[0.14em] text-secondary">
+              Policy Duel Visualization
+            </div>
+            <div className="text-[11px] font-mono text-muted uppercase tracking-[0.08em]">
+              lower is better
+            </div>
+          </div>
+
+          <div className="space-y-3.5">
+            {duel.map((row, i) => (
+              <motion.div
+                key={row.name}
+                initial={{ opacity: 0, y: 8 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.35, delay: i * 0.08 }}
+                className="rounded-md border border-subtle bg-elevated/30 p-3"
+              >
+                <div className="flex items-center justify-between text-xs mb-2">
+                  <span className="text-primary font-medium">{row.name}</span>
+                  <span className="text-secondary font-mono">loss {row.loss}% · breaking {row.break}%</span>
+                </div>
+                <div className="space-y-1.5">
+                  <div>
+                    <div className="h-2 rounded-full bg-void overflow-hidden">
+                      <motion.div
+                        initial={{ width: 0 }}
+                        whileInView={{ width: `${row.loss}%` }}
+                        viewport={{ once: true }}
+                        transition={{ duration: reduced ? 0 : 0.7, delay: i * 0.08 }}
+                        className="h-full rounded-full"
+                        style={{ background: row.color }}
+                      />
+                    </div>
+                    <div className="text-[10px] text-muted mt-1">Income loss footprint</div>
+                  </div>
+                  <div>
+                    <div className="h-2 rounded-full bg-void overflow-hidden">
+                      <motion.div
+                        initial={{ width: 0 }}
+                        whileInView={{ width: `${row.break}%` }}
+                        viewport={{ once: true }}
+                        transition={{ duration: reduced ? 0 : 0.7, delay: i * 0.08 + 0.08 }}
+                        className="h-full rounded-full"
+                        style={{ background: "rgba(74,124,255,0.9)" }}
+                      />
+                    </div>
+                    <div className="text-[10px] text-muted mt-1">Breaking-point exposure</div>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function toneColor(tone) {
+  if (tone === "cyan") return TONE.cyan;
+  if (tone === "amber") return TONE.amber;
+  if (tone === "green") return TONE.green;
+  if (tone === "blue") return TONE.blue;
+  return "var(--text-primary)";
+}
+
+function AnimatedValue({ to, duration = 900, className, style }) {
+  const [value, setValue] = useState(0);
+  const rafRef = useRef(null);
+
+  useEffect(() => {
+    if (!duration) {
+      setValue(to);
+      return;
+    }
+    const start = performance.now();
+    const from = 0;
+
+    const tick = (now) => {
+      const t = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - t, 3);
+      setValue(Math.round(from + (to - from) * eased));
+      if (t < 1) {
+        rafRef.current = requestAnimationFrame(tick);
+      }
+    };
+
+    rafRef.current = requestAnimationFrame(tick);
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
+  }, [to, duration]);
+
+  return (
+    <span className={className} style={style}>
+      {value}
+    </span>
   );
 }
 
@@ -79,7 +274,7 @@ function Hero() {
           transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
           className="inline-block"
         >
-          <Badge tone="blue"> · Feature Friday Week 4</Badge>
+          <Badge tone="blue"> · Feature Friday Final Sprint</Badge>
         </motion.div>
         <motion.h1
           initial={{ opacity: 0, y: 8 }}
@@ -97,7 +292,7 @@ function Hero() {
           className="font-body text-secondary mt-4 max-w-[640px] mx-auto"
           style={{ fontSize: "clamp(16px, 1.4vw, 20px)" }}
         >
-          A multi-agent societal impact simulation engine. Every event has a face.
+          A multi-agent societal impact simulation engine with live relationship inference and intervention planning. Every event has a face.
         </motion.p>
         <motion.p
           initial={{ opacity: 0 }}
@@ -226,7 +421,7 @@ function HowItWorks() {
       title: "Build",
       glyph: <BuildGlyph />,
       body:
-        "Drop in everyday characters with real economic profiles — income, expenses, EMIs, savings, dependencies. Connect them: who serves whom, who buys from whom.",
+        "Drop in everyday characters with real economic profiles. New characters are now auto-linked into the social graph using role, income, and location so nobody enters the simulation isolated.",
     },
     {
       title: "Drop",
@@ -238,7 +433,7 @@ function HowItWorks() {
       title: "Watch",
       glyph: <WatchGlyph />,
       body:
-        "Sonar rings expand wave by wave across the network. Characters flash, decide, and emit their own ripples. Their stories unfold in first-person Hinglish.",
+        "Sonar rings expand wave by wave across the network. Then Intervention Lab projects how targeted support changes total losses and breaking points before the shock becomes irreversible.",
     },
   ];
   return (
@@ -803,9 +998,24 @@ function ShowcaseStory() {
 function FeaturesSection() {
   const features = [
     {
+      title: "Smart Connection Engine",
+      description: "Wizard-created characters are now stitched into the economy instantly. The engine infers high-probability links from archetype, income proximity, dependencies, and location. Judges get a realistic, non-fragile network without manual setup overhead.",
+      preview: <SmartConnectionsPreview />,
+    },
+    {
       title: "Impact Dashboard",
       description: "Real-time visualization of cascading economic impacts across the network. Watch vulnerability scores shift, dependencies break, and ripple effects spread through your society. Track every character's financial health as events unfold wave by wave.",
       preview: <ImpactDashboardPreview />,
+    },
+    {
+      title: "Intervention Lab",
+      description: "A policy sandbox inside the simulation. Pick a critical character, tune support budget, and instantly project prevented losses, reduced breaking points, and post-intervention recovery trajectories. This turns RIPPLE from storytelling into actionable planning.",
+      preview: <InterventionLabPreview />,
+    },
+    {
+      title: "Shock DNA + Portfolio Optimizer",
+      description: "Every event now gets a machine-readable Shock DNA profile (spread rate, concentration, persistence), then converts budget into a ranked intervention portfolio with projected savings. This gives judges measurable policy intelligence, not just visuals.",
+      preview: <ShockDNAPreview />,
     },
     {
       title: "Ask the Characters",
@@ -893,6 +1103,109 @@ function ImpactDashboardPreview() {
             <span className="text-wave-orange">2</span>
           </div>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function SmartConnectionsPreview() {
+  const nodes = [
+    { e: "🚗", n: "Driver", x: 0.2, y: 0.3 },
+    { e: "🏪", n: "Store", x: 0.55, y: 0.28 },
+    { e: "🎓", n: "Student", x: 0.82, y: 0.48 },
+    { e: "☕", n: "Chai", x: 0.5, y: 0.72 },
+    { e: "🆕", n: "New", x: 0.22, y: 0.72 },
+  ];
+  const links = [
+    [0, 1, "solid"],
+    [1, 2, "solid"],
+    [1, 3, "solid"],
+    [4, 0, "inferred"],
+    [4, 3, "inferred"],
+  ];
+
+  return (
+    <div className="aspect-video p-4 relative overflow-hidden" style={{ background: "linear-gradient(135deg, #111114 0%, #1a1a1f 100%)" }}>
+      <svg viewBox="0 0 320 180" className="w-full h-full">
+        {links.map(([a, b, kind], i) => (
+          <line
+            key={i}
+            x1={nodes[a].x * 320}
+            y1={nodes[a].y * 180}
+            x2={nodes[b].x * 320}
+            y2={nodes[b].y * 180}
+            stroke={kind === "inferred" ? TONE.blue : "rgba(34,211,238,0.3)"}
+            strokeDasharray={kind === "inferred" ? "4 3" : "0"}
+            strokeWidth="1.4"
+          />
+        ))}
+        {nodes.map((node, i) => (
+          <g key={i}>
+            <circle cx={node.x * 320} cy={node.y * 180} r="13" fill="#15151a" stroke="rgba(34,211,238,0.55)" />
+            <text x={node.x * 320} y={node.y * 180 + 4} textAnchor="middle" fontSize="10">{node.e}</text>
+          </g>
+        ))}
+      </svg>
+      <div className="absolute bottom-3 left-4 font-mono text-[10px] text-secondary uppercase tracking-[0.12em]">
+        inferred links activate in under 1 sec
+      </div>
+    </div>
+  );
+}
+
+function InterventionLabPreview() {
+  return (
+    <div className="aspect-video p-5 relative overflow-hidden" style={{ background: "linear-gradient(135deg, #111114 0%, #1a1a1f 100%)" }}>
+      <div className="rounded-md border border-subtle bg-surface/70 p-3 space-y-3">
+        <div className="flex items-center justify-between">
+          <span className="font-body text-xs text-primary font-semibold">Intervention Lab</span>
+          <span className="font-mono text-[10px] text-accent-cyan">WHAT-IF</span>
+        </div>
+        <div className="space-y-1.5 text-xs">
+          <div className="flex justify-between">
+            <span className="text-secondary">Protect</span>
+            <span className="text-primary">🥛 Govind</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-secondary">Budget</span>
+            <span className="text-accent-cyan font-mono">₹52,000</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-secondary">Loss prevented</span>
+            <span className="text-wave-green font-mono">₹31,400</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-secondary">Breaking point</span>
+            <span className="text-wave-amber font-mono">5 to 3</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ShockDNAPreview() {
+  return (
+    <div className="aspect-video p-5 relative overflow-hidden" style={{ background: "linear-gradient(135deg, #111114 0%, #1a1a1f 100%)" }}>
+      <div className="grid grid-cols-3 gap-2 mb-3">
+        <div className="rounded border border-subtle bg-surface p-2">
+          <div className="text-[10px] text-secondary uppercase">Spread</div>
+          <div className="text-sm text-primary font-bold">132%</div>
+        </div>
+        <div className="rounded border border-subtle bg-surface p-2">
+          <div className="text-[10px] text-secondary uppercase">Concentration</div>
+          <div className="text-sm text-primary font-bold">46%</div>
+        </div>
+        <div className="rounded border border-subtle bg-surface p-2">
+          <div className="text-[10px] text-secondary uppercase">Persistence</div>
+          <div className="text-sm text-primary font-bold">83%</div>
+        </div>
+      </div>
+      <div className="rounded-md border border-accent-cyan/30 bg-accent-cyan/5 p-2.5 text-xs space-y-1.5">
+        <div className="text-accent-cyan font-mono text-[10px] uppercase tracking-[0.1em]">Portfolio Optimizer</div>
+        <div className="flex justify-between"><span className="text-secondary">🥛 Govind</span><span className="text-primary font-mono">₹40K to ₹31K</span></div>
+        <div className="flex justify-between"><span className="text-secondary">🚗 Ramesh</span><span className="text-primary font-mono">₹30K to ₹18K</span></div>
+        <div className="pt-1 border-t border-subtle flex justify-between"><span className="text-secondary">Total protected</span><span className="text-wave-green font-mono">₹49K</span></div>
       </div>
     </div>
   );

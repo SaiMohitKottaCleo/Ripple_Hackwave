@@ -7,7 +7,7 @@ import {
   forceCollide,
 } from "d3-force";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Loader2, RefreshCw, Settings2, BarChart2, X } from "lucide-react";
+import { ArrowLeft, Loader2, RefreshCw, Settings2, BarChart2, Shield, X } from "lucide-react";
 import { Button } from "../components/ui/Button.jsx";
 import { Badge } from "../components/ui/Badge.jsx";
 import { Card } from "../components/ui/Card.jsx";
@@ -18,6 +18,7 @@ import { ImpactDashboard } from "../components/ripple/ImpactDashboard.jsx";
 import { StoryPanel } from "./StoryPanel.jsx";
 import { useReducedMotion } from "../hooks/useReducedMotion.js";
 import { simulateCascade } from "../lib/cascade.js";
+import { analyzeNetworkResilience, buildResilienceBlueprint, estimateInterventionImpact } from "../lib/networkResilience.js";
 import { vulnerability } from "../data/society.js";
 
 const TONE = {
@@ -142,6 +143,10 @@ export function SimulationView({ go, event, society }) {
   const [phase, setPhase] = useState("intro"); // intro | running | done
   const [showPulse, setShowPulse] = useState(false);
   const [showDashboard, setShowDashboard] = useState(false);
+  const [showIntervention, setShowIntervention] = useState(false);
+  const [protectedId, setProtectedId] = useState(null);
+  const [budgetFactor, setBudgetFactor] = useState(1);
+  const [portfolioBudget, setPortfolioBudget] = useState(60000);
   const [chrome, setChrome] = useState(true);
   const [selId, setSelId] = useState(null);
   const timersRef = useRef([]);
@@ -216,6 +221,39 @@ export function SimulationView({ go, event, society }) {
   // ── Derived ──────────────────────────────────────────────
   const tone = (id) => lit[id];
   const selected = selId != null ? characters.find((c) => c.id === selId) : null;
+  const protectedCharacter = protectedId != null ? characters.find((c) => c.id === protectedId) : null;
+  const networkAnalysis = useMemo(
+    () => (cascade ? analyzeNetworkResilience(characters, cascade, connections) : null),
+    [cascade, characters, connections]
+  );
+
+  const interventionProjection = useMemo(() => {
+    if (!cascade || !protectedCharacter) return null;
+    const baseLoss = cascade.summary?.incomeLost || 0;
+    const baseBreaking = cascade.summary?.breaking || 0;
+    const protectedAmount = Math.round(estimateInterventionImpact(protectedCharacter, characters, cascade) * budgetFactor);
+    const projectedIncomeLost = Math.max(0, baseLoss - protectedAmount);
+    const breakingDropRatio = baseLoss > 0 ? Math.min(0.7, protectedAmount / baseLoss) : 0;
+    const projectedBreaking = Math.max(0, Math.round(baseBreaking * (1 - breakingDropRatio)));
+    return {
+      protectedAmount,
+      projectedIncomeLost,
+      projectedBreaking,
+      protectedName: protectedCharacter.name,
+      budget: Math.round((protectedCharacter.income || 0) * budgetFactor),
+    };
+  }, [budgetFactor, cascade, characters, protectedCharacter]);
+
+  const portfolioPlan = useMemo(() => {
+    if (!cascade) return null;
+    return buildResilienceBlueprint({
+      characters,
+      cascade,
+      connections,
+      totalBudget: portfolioBudget,
+    });
+  }, [cascade, characters, connections, portfolioBudget]);
+
   const selImpacts = useMemo(() => {
     if (!cascade || selId == null) return [];
     return cascade.waves
@@ -330,6 +368,16 @@ export function SimulationView({ go, event, society }) {
                 size={58}
                 label={c.name}
               />
+              {protectedId === c.id && (
+                <div
+                  className="absolute inset-0 rounded-full"
+                  style={{
+                    boxShadow: "0 0 0 2px rgba(34,211,238,0.95), 0 0 18px rgba(34,211,238,0.55)",
+                    transform: "scale(1.34)",
+                    pointerEvents: "none",
+                  }}
+                />
+              )}
               <AnimatePresence>
                 {bubbles[c.id] && (
                   <motion.div
@@ -440,6 +488,14 @@ export function SimulationView({ go, event, society }) {
         <Button
           variant="ghost"
           size="sm"
+          onClick={() => setShowIntervention((s) => !s)}
+          iconLeft={<Shield className="h-3.5 w-3.5" />}
+        >
+          <span className="hidden md:inline">Intervention Lab</span>
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
           onClick={play}
           iconLeft={<RefreshCw className="h-3.5 w-3.5" />}
         >
@@ -501,6 +557,125 @@ export function SimulationView({ go, event, society }) {
         )}
       </AnimatePresence>
 
+      {/* Intervention Lab */}
+      <AnimatePresence>
+        {showIntervention && cascade && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 8 }}
+            className="absolute top-16 left-4 w-[320px] z-30"
+          >
+            <Card elevated padding="p-4">
+              <div className="flex items-center justify-between mb-2">
+                <div className="font-display font-semibold text-[15px] text-primary">Intervention Lab</div>
+                <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-accent-cyan">what-if</span>
+              </div>
+              <p className="font-body text-xs text-secondary mb-3">
+                Protect one critical character and project prevented network damage.
+              </p>
+
+              {networkAnalysis?.interventions?.length ? (
+                <div className="space-y-2 mb-3">
+                  <div className="font-body text-[11px] text-muted uppercase tracking-[0.08em]">Recommended</div>
+                  {networkAnalysis.interventions.slice(0, 3).map((it) => (
+                    <button
+                      key={it.id}
+                      onClick={() => setProtectedId(it.id)}
+                      className={`w-full text-left rounded-md border px-2.5 py-2 transition-colors ${
+                        protectedId === it.id ? "border-accent-cyan bg-accent-cyan/10" : "border-subtle bg-surface hover:border-active"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="font-body text-xs text-primary">{it.emoji} {it.name}</span>
+                        <span className="font-mono text-[10px] text-wave-green">ROI {it.roi}%</span>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              ) : null}
+
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-xs text-secondary">
+                  <span>Support multiplier</span>
+                  <span className="font-mono text-primary">{budgetFactor.toFixed(1)}x</span>
+                </div>
+                <input
+                  type="range"
+                  min="0.5"
+                  max="2"
+                  step="0.1"
+                  value={budgetFactor}
+                  onChange={(e) => setBudgetFactor(Number(e.target.value))}
+                  className="w-full"
+                />
+              </div>
+
+              {interventionProjection ? (
+                <div className="mt-3 space-y-2 rounded-md border border-subtle bg-surface p-3">
+                  <div className="flex justify-between text-xs">
+                    <span className="text-secondary">Protected node</span>
+                    <span className="font-semibold text-primary">{interventionProjection.protectedName}</span>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-secondary">Intervention budget</span>
+                    <span className="font-mono text-accent-cyan">₹{interventionProjection.budget.toLocaleString("en-IN")}</span>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-secondary">Projected loss prevented</span>
+                    <span className="font-mono text-wave-green">₹{interventionProjection.protectedAmount.toLocaleString("en-IN")}</span>
+                  </div>
+                  <div className="pt-2 border-t border-subtle space-y-1.5">
+                    <div className="flex justify-between text-xs">
+                      <span className="text-secondary">Income lost after intervention</span>
+                      <span className="font-mono text-primary">₹{interventionProjection.projectedIncomeLost.toLocaleString("en-IN")}</span>
+                    </div>
+                    <div className="flex justify-between text-xs">
+                      <span className="text-secondary">People near breaking point</span>
+                      <span className="font-mono text-primary">{interventionProjection.projectedBreaking}</span>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <p className="font-body text-xs text-muted mt-3">Pick a recommended character to run a projection.</p>
+              )}
+
+              <div className="mt-3 rounded-md border border-accent-cyan/30 bg-accent-cyan/5 p-3">
+                <div className="flex items-center justify-between text-xs mb-2">
+                  <span className="text-accent-cyan font-mono uppercase tracking-[0.1em]">Portfolio Optimizer</span>
+                  <span className="font-mono text-primary">₹{portfolioBudget.toLocaleString("en-IN")}</span>
+                </div>
+                <input
+                  type="range"
+                  min="20000"
+                  max="200000"
+                  step="5000"
+                  value={portfolioBudget}
+                  onChange={(e) => setPortfolioBudget(Number(e.target.value))}
+                  className="w-full"
+                />
+                {portfolioPlan?.plans?.length ? (
+                  <div className="mt-2.5 space-y-1.5">
+                    {portfolioPlan.plans.slice(0, 3).map((plan) => (
+                      <div key={plan.id} className="flex justify-between text-xs">
+                        <span className="text-primary">{plan.emoji} {plan.name}</span>
+                        <span className="font-mono text-secondary">₹{plan.grant.toLocaleString("en-IN")} to ₹{plan.projectedSavings.toLocaleString("en-IN")}</span>
+                      </div>
+                    ))}
+                    <div className="pt-1.5 border-t border-subtle flex justify-between text-xs">
+                      <span className="text-secondary">Projected cascade loss prevented</span>
+                      <span className="font-mono text-wave-green">₹{portfolioPlan.projectedSavings.toLocaleString("en-IN")}</span>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-xs text-muted mt-2">No portfolio recommendations yet.</p>
+                )}
+              </div>
+            </Card>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Impact Dashboard Modal */}
       <AnimatePresence>
         {showDashboard && cascade && (
@@ -532,7 +707,7 @@ export function SimulationView({ go, event, society }) {
 
               {/* Content */}
               <div className="p-6">
-                <ImpactDashboard cascade={cascade} characters={characters} />
+                <ImpactDashboard cascade={cascade} characters={characters} connections={connections} />
               </div>
             </motion.div>
           </motion.div>

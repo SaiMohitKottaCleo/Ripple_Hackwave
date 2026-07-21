@@ -48,8 +48,14 @@ export function SocietyBuilder({ go, onReady }) {
     connections: DEMO_CONNECTIONS,
   });
 
-  const characters = useMemo(() => withPositions(stored.characters), [stored.characters]);
-  const connections = stored.connections;
+  const normalized = useMemo(() => normalizeSocietyState(stored), [stored]);
+
+  useEffect(() => {
+    if (normalized.changed) setStored(normalized.state);
+  }, [normalized, setStored]);
+
+  const characters = useMemo(() => withPositions(normalized.state.characters), [normalized.state.characters]);
+  const connections = normalized.state.connections;
 
   const [selId, setSel] = useState(null);
   const [hov, setHov] = useState(null);
@@ -622,6 +628,104 @@ function CharacterEditor({
       </div>
     </motion.div>
   );
+}
+
+function normalizeSocietyState(raw) {
+  const base = {
+    characters: DEMO_CHARACTERS,
+    connections: DEMO_CONNECTIONS,
+  };
+
+  if (!raw || typeof raw !== "object") return { state: base, changed: true };
+
+  let changed = false;
+  const inChars = Array.isArray(raw.characters) ? raw.characters : [];
+  const nextChars = inChars
+    .map((c, idx) => {
+      if (!c || typeof c !== "object") {
+        changed = true;
+        return null;
+      }
+      const idNum = Number(c.id);
+      const id = Number.isFinite(idNum) ? idNum : idx + 1;
+      if (!Number.isFinite(idNum)) changed = true;
+
+      const income = safeNumber(c.income, 20000);
+      const fixed = safeNumber(c.fixed, 9000);
+      const emi = safeNumber(c.emi, 2000);
+      const savings = safeNumber(c.savings, 3000);
+
+      if (
+        income !== c.income ||
+        fixed !== c.fixed ||
+        emi !== c.emi ||
+        savings !== c.savings
+      ) {
+        changed = true;
+      }
+
+      return {
+        id,
+        key: typeof c.key === "string" ? c.key : "custom",
+        emoji: typeof c.emoji === "string" && c.emoji.trim() ? c.emoji : "🙂",
+        name: typeof c.name === "string" && c.name.trim() ? c.name : `Character ${id}`,
+        archetype: typeof c.archetype === "string" && c.archetype.trim() ? c.archetype : "Independent Worker",
+        location: typeof c.location === "string" && c.location.trim() ? c.location : "—",
+        income,
+        fixed,
+        emi,
+        savings,
+        dependencies: Array.isArray(c.dependencies) ? c.dependencies : [],
+        x: Number.isFinite(c.x) ? c.x : undefined,
+        y: Number.isFinite(c.y) ? c.y : undefined,
+      };
+    })
+    .filter(Boolean);
+
+  if (!nextChars.length) {
+    return { state: base, changed: true };
+  }
+
+  const idSet = new Set(nextChars.map((c) => c.id));
+  const inConnections = Array.isArray(raw.connections) ? raw.connections : [];
+  const nextConnections = inConnections
+    .map((e) => {
+      if (!e || typeof e !== "object") {
+        changed = true;
+        return null;
+      }
+      const a = Number(e.a);
+      const b = Number(e.b);
+      if (!Number.isFinite(a) || !Number.isFinite(b) || a === b) {
+        changed = true;
+        return null;
+      }
+      if (!idSet.has(a) || !idSet.has(b)) {
+        changed = true;
+        return null;
+      }
+      const strength = Math.max(1, Math.min(10, safeNumber(e.strength, 5)));
+      if (strength !== e.strength) changed = true;
+      return {
+        a,
+        b,
+        type: typeof e.type === "string" && e.type.trim() ? e.type : "depends_on",
+        strength,
+      };
+    })
+    .filter(Boolean);
+
+  const normalizedState = {
+    characters: nextChars,
+    connections: nextConnections,
+  };
+
+  return { state: normalizedState, changed };
+}
+
+function safeNumber(value, fallback) {
+  const n = Number(value);
+  return Number.isFinite(n) ? n : fallback;
 }
 
 function SectionLabel({ children }) {

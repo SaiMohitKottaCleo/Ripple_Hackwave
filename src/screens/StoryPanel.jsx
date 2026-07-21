@@ -105,19 +105,21 @@ export function StoryPanel({ character, impacts, event, cracked, onOpenCascade, 
                     <div key={wave.n} className="mt-5">
                       <WaveMarker number={wave.n} title={wave.title} />
                       <p className="font-body text-sm text-primary leading-relaxed italic mt-3 mb-3.5">
-                        “{im.diary}”
+                        “{typeof im?.diary === "string" && im.diary.trim() ? im.diary : "No diary entry available for this wave."}”
                       </p>
                       <div className="grid gap-2.5">
-                        {im.rows.map((r, i) => (
+                        {Array.isArray(im?.rows) && im.rows.length > 0 ? im.rows.map((r, i) => (
                           <StatReadout
                             key={i}
-                            icon={r[0]}
-                            label={r[1]}
-                            value={r[2]}
-                            tone={r[3]}
+                            icon={r?.[0] || "📊"}
+                            label={r?.[1] || "Impact"}
+                            value={r?.[2] || "Updated"}
+                            tone={r?.[3] || "neutral"}
                             size="sm"
                           />
-                        ))}
+                        )) : (
+                          <StatReadout icon="📊" label="Impact" value="Details unavailable" tone="neutral" size="sm" />
+                        )}
                       </div>
                       <div className="border-t border-subtle mt-4" />
                     </div>

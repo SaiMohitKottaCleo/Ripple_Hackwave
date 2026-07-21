@@ -23,8 +23,9 @@ export async function simulateCascade({ event, characters, connections, signal }
       signal,
     });
     const parsed = extractJSON(text);
-    if (!parsed?.waves?.length) throw new Error("malformed cascade");
-    return { source: provider || "claude", cascade: parsed };
+    const normalized = normalizeCascade(parsed, { event, characters });
+    if (!normalized?.waves?.length) throw new Error("malformed cascade");
+    return { source: provider || "claude", cascade: normalized };
   } catch (err) {
     if (err?.name === "AbortError") throw err;
     console.warn("[ripple] cascade fell back to baked:", err.message);
@@ -170,4 +171,79 @@ function extractJSON(text) {
   } catch {
     return null;
   }
+}
+
+function normalizeCascade(raw, { event, characters }) {
+  if (!raw || !Array.isArray(raw.waves)) return null;
+
+  const ids = new Set((characters || []).map((c) => c.id));
+  const tones = new Set(["amber", "orange", "red", "green", "neutral"]);
+
+  const waves = raw.waves
+    .map((w, wi) => {
+      const impacts = Array.isArray(w?.impacts)
+        ? w.impacts
+            .map((im) => {
+              const id = Number(im?.id);
+              if (!Number.isFinite(id) || !ids.has(id)) return null;
+
+              const rows = Array.isArray(im?.rows)
+                ? im.rows
+                    .filter((r) => Array.isArray(r))
+                    .map((r) => [
+                      String(r?.[0] ?? "📊"),
+                      String(r?.[1] ?? "Impact"),
+                      String(r?.[2] ?? "Updated"),
+                      tones.has(String(r?.[3])) ? String(r[3]) : "neutral",
+                    ])
+                : [];
+
+              return {
+                id,
+                bubble: String(im?.bubble ?? "Impact update"),
+                diary: String(im?.diary ?? "No diary entry available."),
+                rows,
+              };
+            })
+            .filter(Boolean)
+        : [];
+
+      if (!impacts.length) return null;
+      return {
+        n: Number.isFinite(Number(w?.n)) ? Number(w.n) : wi + 1,
+        title: String(w?.title ?? `Wave ${wi + 1}`),
+        tone: tones.has(String(w?.tone)) ? String(w.tone) : "amber",
+        impacts,
+      };
+    })
+    .filter(Boolean);
+
+  if (!waves.length) return null;
+
+  const affectedIds = new Set(waves.flatMap((w) => w.impacts.map((im) => im.id)));
+  const incomeLost = Number(raw?.summary?.incomeLost);
+  const breaking = Number(raw?.summary?.breaking);
+  const recoveryDays = Number(raw?.summary?.recoveryDays);
+
+  return {
+    event: {
+      emoji: String(raw?.event?.emoji ?? event?.emoji ?? "⚠️"),
+      name: String(raw?.event?.name ?? event?.name ?? "Shock Event"),
+      tone: tones.has(String(raw?.event?.tone)) ? String(raw.event.tone) : String(event?.tone ?? "amber"),
+    },
+    waves,
+    summary: {
+      totalWaves: Number.isFinite(Number(raw?.summary?.totalWaves))
+        ? Number(raw.summary.totalWaves)
+        : waves.length,
+      affected: Number.isFinite(Number(raw?.summary?.affected))
+        ? Number(raw.summary.affected)
+        : affectedIds.size,
+      incomeLost: Number.isFinite(incomeLost) ? incomeLost : 0,
+      mostVulnerable: String(raw?.summary?.mostVulnerable ?? ""),
+      breaking: Number.isFinite(breaking) ? breaking : 0,
+      recoveryDays: Number.isFinite(recoveryDays) ? recoveryDays : 30,
+      loops: Array.isArray(raw?.summary?.loops) ? raw.summary.loops.map((x) => String(x)) : [],
+    },
+  };
 }

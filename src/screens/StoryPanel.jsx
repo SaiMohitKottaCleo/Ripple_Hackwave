@@ -5,6 +5,7 @@ import { AvatarToken } from "../components/ripple/AvatarToken.jsx";
 import { WaveMarker } from "../components/ripple/WaveMarker.jsx";
 import { StatReadout } from "../components/ripple/StatReadout.jsx";
 import { characterReply } from "../lib/cascade.js";
+import { validateUserInput, sanitizeCharacterResponse } from "../lib/contentModeration.js";
 import { vulnerability } from "../data/society.js";
 
 const TONE = {
@@ -14,7 +15,7 @@ const TONE = {
   green: "var(--wave-green)",
 };
 
-export function StoryPanel({ character, impacts, event, cracked, onClose }) {
+export function StoryPanel({ character, impacts, event, cracked, onOpenCascade, onClose }) {
   const [tab, setTab] = useState("story");
 
   // Reset to story view whenever a new character is selected
@@ -88,9 +89,17 @@ export function StoryPanel({ character, impacts, event, cracked, onClose }) {
                   </span>
                 </div>
                 {impacts.length === 0 ? (
-                  <p className="font-body text-sm text-muted mt-6 italic text-center">
-                    This character isn&apos;t in the cascade — their world held steady.
-                  </p>
+                  <div className="mt-6 text-center">
+                    <p className="font-body text-sm text-muted italic">
+                      This character wasn&apos;t impacted in this run. Their world held steady.
+                    </p>
+                    <button
+                      onClick={onOpenCascade}
+                      className="mt-3 text-xs font-semibold text-accent-cyan hover:underline"
+                    >
+                      Open full Cascade Diary
+                    </button>
+                  </div>
                 ) : (
                   impacts.map(({ wave, im }) => (
                     <div key={wave.n} className="mt-5">
@@ -134,6 +143,7 @@ function ChatTab({ character }) {
   ]);
   const [draft, setDraft] = useState("");
   const [thinking, setThinking] = useState(false);
+  const [error, setError] = useState("");
   const scrollRef = useRef(null);
 
   // Reset per character
@@ -145,6 +155,7 @@ function ChatTab({ character }) {
       },
     ]);
     setDraft("");
+    setError("");
   }, [character.id]);
 
   useEffect(() => {
@@ -157,6 +168,14 @@ function ChatTab({ character }) {
   const send = async () => {
     const q = draft.trim();
     if (!q || thinking) return;
+
+    const check = validateUserInput(q);
+    if (!check.valid) {
+      setError(check.error || "Message blocked by moderation policy.");
+      return;
+    }
+
+    setError("");
     const userMsg = { role: "user", text: q };
     const history = [...msgs, userMsg];
     setMsgs(history);
@@ -168,7 +187,8 @@ function ChatTab({ character }) {
         question: q,
         history: msgs,
       });
-      setMsgs((m) => [...m, { role: "char", text: reply }]);
+      const safe = sanitizeCharacterResponse(reply);
+      setMsgs((m) => [...m, { role: "char", text: safe.text }]);
     } finally {
       setThinking(false);
     }
@@ -217,12 +237,15 @@ function ChatTab({ character }) {
         }}
         className="px-5 py-3.5 border-t border-subtle flex gap-2"
       >
+        <div className="w-full">
+          {error && <p className="mb-1 text-[11px] font-body text-red-300">{error}</p>}
         <input
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           placeholder={`Ask ${character.name} anything...`}
           className="flex-1 bg-void border border-subtle rounded-full px-3.5 py-2 text-primary font-body text-[13px] outline-none focus:border-accent-blue"
         />
+        </div>
         <button
           type="submit"
           disabled={!draft.trim() || thinking}

@@ -423,10 +423,10 @@ function CharacterEditor({
   const [strength, setStrength] = useState(6);
 
   useEffect(() => {
-    if (others.length && !others.find((x) => x.id === targetId)) {
-      setTargetId(others[0].id);
-    }
-  }, [c.id, others, targetId]);
+   if(!connectable.find((x) => x.id === targetId)){
+     setTargetId(connectable[0]?.id ?? null);
+   }
+  },[c.id, connectable, targetId]);
 
   const linkedSet = new Set(linked.map((e) => e.otherId));
   const connectable = others.filter((x) => !linkedSet.has(x.id));

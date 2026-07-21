@@ -7,7 +7,7 @@ import {
   forceCollide,
 } from "d3-force";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Loader2, RefreshCw, Settings2, BarChart2, Shield, X } from "lucide-react";
+import { ArrowLeft, Loader2, RefreshCw, Settings2, BarChart2, Shield, X, BookOpenText } from "lucide-react";
 import { Button } from "../components/ui/Button.jsx";
 import { Badge } from "../components/ui/Badge.jsx";
 import { Card } from "../components/ui/Card.jsx";
@@ -143,6 +143,7 @@ export function SimulationView({ go, event, society }) {
   const [phase, setPhase] = useState("intro"); // intro | running | done
   const [showPulse, setShowPulse] = useState(false);
   const [showDashboard, setShowDashboard] = useState(false);
+  const [showCascadeDiary, setShowCascadeDiary] = useState(false);
   const [showIntervention, setShowIntervention] = useState(false);
   const [protectedId, setProtectedId] = useState(null);
   const [budgetFactor, setBudgetFactor] = useState(1);
@@ -260,6 +261,18 @@ export function SimulationView({ go, event, society }) {
       .map((w) => ({ wave: w, im: w.impacts.find((i) => i.id === selId) }))
       .filter((x) => x.im);
   }, [cascade, selId]);
+
+  const impactByCharacter = useMemo(() => {
+    if (!cascade) return new Map();
+    const m = new Map();
+    cascade.waves.forEach((w) => {
+      w.impacts.forEach((im) => {
+        if (!m.has(im.id)) m.set(im.id, []);
+        m.get(im.id).push({ wave: w, im });
+      });
+    });
+    return m;
+  }, [cascade]);
 
   const headline =
     phase === "done" && cascade
@@ -488,6 +501,14 @@ export function SimulationView({ go, event, society }) {
         <Button
           variant="ghost"
           size="sm"
+          onClick={() => setShowCascadeDiary(true)}
+          iconLeft={<BookOpenText className="h-3.5 w-3.5" />}
+        >
+          <span className="hidden md:inline">Cascade Diary</span>
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
           onClick={() => setShowIntervention((s) => !s)}
           iconLeft={<Shield className="h-3.5 w-3.5" />}
         >
@@ -506,6 +527,22 @@ export function SimulationView({ go, event, society }) {
           <span className="sm:hidden">New</span>
         </Button>
       </div>
+
+      {/* Baked-mode helper */}
+      <AnimatePresence>
+        {!loading && source === "baked" && (
+          <motion.div
+            initial={{ opacity: 0, y: -6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
+            className="absolute top-16 left-1/2 -translate-x-1/2 z-30"
+          >
+            <div className="px-3 py-2 rounded-md border border-amber-400/40 bg-amber-400/10 font-body text-xs text-amber-100">
+              Demo cascade is showing. Add GROQ_API_KEY in Vercel and redeploy for live responses.
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Society Pulse */}
       <AnimatePresence>
@@ -714,6 +751,68 @@ export function SimulationView({ go, event, society }) {
         )}
       </AnimatePresence>
 
+      {/* Full Cascade Diary Modal */}
+      <AnimatePresence>
+        {showCascadeDiary && cascade && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            onClick={() => setShowCascadeDiary(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+              className="bg-surface border border-subtle rounded-lg shadow-2xl max-h-[90vh] overflow-y-auto max-w-3xl w-full"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="sticky top-0 border-b border-subtle bg-elevated/70 px-6 py-4 flex items-center justify-between z-10">
+                <h2 className="font-display font-bold text-lg text-primary">Cascade Diary</h2>
+                <button
+                  onClick={() => setShowCascadeDiary(false)}
+                  className="h-8 w-8 inline-flex items-center justify-center rounded-md border border-subtle text-secondary hover:text-primary hover:border-active"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+
+              <div className="p-6 space-y-6">
+                {cascade.waves.map((w) => (
+                  <section key={w.n} className="space-y-3">
+                    <WaveMarker number={w.n} title={w.title} active={activeWave === w.n} />
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      {w.impacts.map((im) => {
+                        const c = characters.find((x) => x.id === im.id);
+                        if (!c) return null;
+                        return (
+                          <article key={im.id} className="rounded-md border border-subtle bg-elevated/40 p-3">
+                            <div className="flex items-center gap-2.5 mb-2">
+                              <AvatarToken emoji={c.emoji} size={34} wave={w.tone} cracked={!!cracked[c.id]} />
+                              <div>
+                                <div className="font-body text-sm font-semibold text-primary">{c.name}</div>
+                                <div className="font-body text-[11px] text-secondary">{im.bubble}</div>
+                              </div>
+                            </div>
+                            <p className="font-body text-sm text-primary leading-relaxed italic">“{im.diary}”</p>
+                          </article>
+                        );
+                      })}
+                    </div>
+                  </section>
+                ))}
+
+                {impactByCharacter.size === 0 && (
+                  <p className="font-body text-sm text-muted">No impacts were generated for this simulation.</p>
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Cascade timeline (bottom) */}
       {cascade && (
         <div
@@ -771,6 +870,7 @@ export function SimulationView({ go, event, society }) {
         impacts={selImpacts}
         event={event || cascade?.event}
         cracked={selected ? !!cracked[selected.id] : false}
+        onOpenCascade={() => setShowCascadeDiary(true)}
         onClose={() => setSelId(null)}
       />
 
